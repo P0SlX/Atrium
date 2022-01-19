@@ -1,4 +1,3 @@
-const {exec} = require("child_process");
 const {MessageEmbed} = require("discord.js");
 const {v1: uuidv1} = require("uuid");
 const download = require("download");
