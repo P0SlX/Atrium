@@ -27,7 +27,6 @@ module.exports = {
                 return;
             }
             const tmp = stdout.split(' ');
-            console.log(tmp)
             const packetLoss = tmp[5];
             const pings = tmp[12].split('/');
             const minPing = pings[0];
