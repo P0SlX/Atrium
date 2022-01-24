@@ -23,18 +23,26 @@ module.exports = async (message) => {
 
     // Real shit
     exec(`youtube-dl -j ${url}`, async (error, stdout, stderr) => {
-        if (error || stderr) {
+        // yt-dl clc là dessus, des fois il trigger error et des fois stderr donc on est obligé de faire ca...
+        if (error) {
             // Si ya pas de vidéo osef
-            if (error.toString().includes("ERROR"))
-                return;
+            if (error.toString().includes("ERROR")) return;
 
             // Vrai erreur
-            else {
-                await message.channel.send({
-                    content: `<@200227803189215232> J'ai pas réussi à recup la vidéo... (exec->error)`
-                });
-                console.log(`error: ${error.message}`);
-            }
+            await message.channel.send({
+                content: `<@200227803189215232> J'ai pas réussi à recup la vidéo... (exec->error)\n \`\`\`${error.message}\`\`\``
+            });
+            console.log(`error: ${error.message}`);
+            return;
+        } else if (stderr) {
+            // Si ya pas de vidéo osef
+            if (stderr.includes("ERROR")) return;
+
+            // Vrai erreur
+            await message.channel.send({
+                content: `<@200227803189215232> J'ai pas réussi à recup la vidéo... (exec->stderr)\n \`\`\`${stderr}\`\`\``
+            });
+            console.log(`stderr: ${stderr}`);
             return;
         }
 

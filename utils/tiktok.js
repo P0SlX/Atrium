@@ -16,7 +16,6 @@ module.exports = async (message) => {
 
     const tmp = await fetch(url);
     const regexID = new RegExp(/\/([0-9]+)/i);
-    const url2 = tmp.url;
     let match = null;
     try {
         match = tmp.url.match(regexID)[1];
