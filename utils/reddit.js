@@ -74,6 +74,9 @@ module.exports = async (message) => {
         const folderPath = '/tmp/';
         const filename = `${uuidv1()}.mp4`;
 
+        if (!j["url"])
+            j["url"] = j["requested_formats"][0]["url"];
+
         download(j['url'], folderPath, {filename: filename})
             .then(async () => {
                 await message.channel.send({embeds: [embed]});
