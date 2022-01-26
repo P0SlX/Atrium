@@ -16,21 +16,6 @@ for (const file of commandFiles) {
     client.commands.set(command.data.name, command);
 }
 
-client.on('interactionCreate', async interaction => {
-    if (!interaction.isCommand()) return;
-
-    const command = client.commands.get(interaction.commandName);
-
-    if (!command) return;
-
-    try {
-        await command.execute(interaction);
-    } catch (error) {
-        console.error(error);
-        return interaction.reply({content: '<@200227803189215232> Ya une couille dans le pâté là...'});
-    }
-});
-
 // Event Handler
 const eventFiles = fs.readdirSync('./events').filter(file => file.endsWith('.js'));
 
