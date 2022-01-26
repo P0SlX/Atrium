@@ -17,7 +17,7 @@ module.exports = async (message) => {
         await message.channel.reply({
             content: "Impossible de récup l'URL de la vidéo...", allowedMentions: {repliedUser: false}
         });
-        console.log('Erreur: URL Reddit impossible à recup.');
+        console.error('Erreur: URL Reddit impossible à recup.');
         return;
     }
 
@@ -32,7 +32,7 @@ module.exports = async (message) => {
             await message.channel.send({
                 content: `<@200227803189215232> J'ai pas réussi à recup la vidéo... (exec->error)\n \`\`\`${error.message}\`\`\``
             });
-            console.log(`error: ${error.message}`);
+            console.error(`error: ${error.message}`);
             return;
         } else if (stderr) {
             // Si ya pas de vidéo osef
@@ -42,7 +42,7 @@ module.exports = async (message) => {
             await message.channel.send({
                 content: `<@200227803189215232> J'ai pas réussi à recup la vidéo... (exec->stderr)\n \`\`\`${stderr}\`\`\``
             });
-            console.log(`stderr: ${stderr}`);
+            console.error(`stderr: ${stderr}`);
             return;
         }
 
