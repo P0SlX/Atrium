@@ -1,6 +1,7 @@
 const fs = require('fs');
 const {Client, Collection, Intents} = require('discord.js');
 const {token} = require('./config.json');
+const sqlite3 = require('sqlite3').verbose();
 
 const client = new Client({
     intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MEMBERS],
@@ -27,5 +28,19 @@ for (const file of eventFiles) {
         client.on(event.name, (...args) => event.execute(...args));
     }
 }
+
+// open the database
+const db = new sqlite3.Database('prout.db', sqlite3.OPEN_READWRITE, (err) => {
+    if (err) {
+        console.error(err.message);
+    }
+    console.log('Connecté à la base de données.');
+});
+
+global.DB = db;
+global.CLIENT = client;
+
+// db.run('CREATE TABLE deleted(id integer primary key autoincrement, message text, date datetime)');
+
 
 client.login(token);

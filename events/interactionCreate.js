@@ -4,6 +4,7 @@ module.exports = {
     async execute(interaction) {
         if (!interaction.isCommand()) return;
 
+        const client = global.CLIENT;
         const command = client.commands.get(interaction.commandName);
 
         if (!command) return;
