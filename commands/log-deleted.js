@@ -30,29 +30,23 @@ module.exports = {
 
                     // Construction de l'embed
                     for (let i = 0; i < Math.min(rows.length, 8); ++i) {
-                        const user = await interaction.guild.members.fetch(rows[i].userId)
-                        const date = new Date(rows[i].date).toLocaleDateString("fr-FR", {
-                            hour: "numeric",
-                            minute: "numeric"
-                        });
+                        const userObj = await interaction.guild.members.fetch(rows[i].userId);
+                        const user = userObj.user.username + ` (#${rows[i].channel})`
+                        const date = new Date(rows[i].date);
+                        const dateString = `${date.getHours()}:${date.getMinutes()} ${date.getDate()}/${date.getMonth()+1}`
 
                         if (i > 0) {
-                            embed.addField("\u200b", user.user.username, true);
+                            embed.addField("\u200b", user, true);
                             embed.addField("\u200b", rows[i].message.substring(0, 1024), true);
-                            embed.addField("\u200b", date, true);
+                            embed.addField("\u200b", dateString, true);
                         } else {
-                            embed.addField("User", user.user.username, true);
+                            embed.addField("User (#channel)", user, true);
                             embed.addField("Message", rows[i].message.substring(0, 1024), true);
-                            embed.addField("Date", date, true);
+                            embed.addField("Date", dateString, true);
                         }
                     }
 
                     embed.setTimestamp(new Date())
-                        .setFooter({
-                            text: `Logs demandé par ${interaction.member.user.username}`,
-                            iconURL: interaction.member.user.avatarURL({dynamic: true})
-                        });
-
                     return interaction.reply({embeds: [embed]});
                 });
         });
