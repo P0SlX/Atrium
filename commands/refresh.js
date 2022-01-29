@@ -27,11 +27,11 @@ module.exports = {
                             if (err)
                                 console.error(err.message);
 
-                            return interaction.reply({content: "Roles refresh avec succès !"})
                         });
                     }
                 });
             });
+            return interaction.reply({content: "Roles refresh avec succès !"})
         });
     },
 };
