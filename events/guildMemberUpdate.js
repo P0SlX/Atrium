@@ -1,5 +1,3 @@
-const fs = require('fs');
-
 module.exports = {
     name: 'guildMemberUpdate',
     once: false,
@@ -9,27 +7,39 @@ module.exports = {
         // Donc si c'est pas ce qu'on veut, on fait pas
         if ((oldMember.nickname === newMember.nickname) && (oldMember.roles.cache.size === newMember.roles.cache.size)) return;
 
-        let jsonData = null;
-        fs.readFile('resources/roles.json', (err, data) => {
-            if (err) throw err;
-            // Importe le JSON en mémoire
-            jsonData = JSON.parse(data.toString());
+        const db = global.DB;
 
-            // Récupère les données qui ont changés
-            const id = newMember.id;
-            const pseudo = newMember.nickname;
-            let newRolesID = [];
-            Array.from(newMember.roles.cache).forEach(elem => newRolesID.push(elem[0]));
+        const getUser = `SELECT id
+                     FROM ROLES
+                     WHERE id=?`;
 
-            // Création de la structure finale
-            jsonData[id] = {
-                "roles": newRolesID,
-                "nick": pseudo
-            };
 
-            // On écrit les changements
-            fs.writeFile('resources/roles.json', JSON.stringify(jsonData), 'utf8', (err) => {
-                if (err) throw err;
+        db.serialize(() => {
+            db.get(getUser, [oldMember.id.toString()], (err, row) => {
+                if (err) console.error(err.message);
+
+                let sql;
+
+                // User inexistant / User déjà sur le serveur
+                if (row == null)
+                    sql = `INSERT INTO roles(roles, nickname, id) 
+                           VALUES(?, ?, ?)`;
+                else
+                    sql = `UPDATE roles
+                           SET roles = ?,
+                               nickname = ?
+                           WHERE
+                               id=?`;
+
+                // Création de l'array avec juste l'id des roles
+                let newRoles = [];
+                Array.from(newMember.roles.cache).forEach(elem => newRoles.push(elem[0]));
+
+                db.run(sql, [newRoles, newMember.nickname, newMember.id.toString()],
+                    (err) => {
+                        if (err)
+                            console.error(err.message);
+                    });
             });
         });
     },

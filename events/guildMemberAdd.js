@@ -1,26 +1,25 @@
-const fs = require('fs');
-
 module.exports = {
     name: 'guildMemberAdd',
     once: false,
     async execute(member) {
-        let jsonData = null;
-        fs.readFile('resources/roles.json', (err, data) => {
-            if (err) throw err;
-            // Importe le JSON en mémoire
-            jsonData = JSON.parse(data.toString());
+        const db = global.DB;
 
-            // Si c'est un nouveau membre
-            const id = member.id;
-            if (jsonData[id] === undefined) return
+        const sql = `SELECT roles, nickname
+                     FROM ROLES
+                     WHERE id=?`;
 
-            // Sinon on va récup les données
-            const memberData = jsonData[id];
-            const pseudo = memberData["nick"];
-            const roles = memberData["roles"];
+        db.serialize(() => {
+            db.get(sql, [member.id.toString()], (err, row) => {
+                if (err) console.error(err.message);
 
-            // Et lui appliquer
-            member.edit({nick: pseudo, roles: roles});
+                // Nouvel utilisateur
+                if (row == null) return;
+
+                const roles = row.roles.split(',');
+                const pseudo = row.nickname;
+
+                member.edit({nick: pseudo, roles: roles});
+            });
         });
     },
 };

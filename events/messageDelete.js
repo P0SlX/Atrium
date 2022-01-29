@@ -7,6 +7,8 @@ module.exports = {
 
         // Serveur de dev
         if (message.guild.id.toString() === "688788377092358212") return;
+
+        // ^^
         if (message.content === "admin") return;
 
         const db = global.DB;
