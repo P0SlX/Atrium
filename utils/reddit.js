@@ -1,53 +1,31 @@
 const {exec} = require("child_process");
 const {MessageEmbed} = require("discord.js");
-const {v1: uuidv1} = require("uuid");
-const download = require("download");
-const fs = require("fs");
+const download_video = require("./download_video");
+const download_video_audio = require("./download_video_audio");
+const extract_url = require("./extract_url");
 
 module.exports = async (message) => {
-    const args = message.content.split(" ");
-
-    // Recup le lien
-    let url = ""
-    args.forEach((item) => {
-        if (item.includes("reddit.com")) url = item;
-    })
-
-    if (url === "") {
-        await message.channel.reply({
-            content: "Impossible de récup l'URL de la vidéo...", allowedMentions: {repliedUser: false}
-        });
-        console.error('Erreur: URL Reddit impossible à recup.');
-        return;
-    }
+    const url = await extract_url(message, "reddit.com");
 
     // Real shit
-    exec(`youtube-dl -j ${url}`, async (error, stdout, stderr) => {
-        // yt-dl clc là dessus, des fois il trigger error et des fois stderr donc on est obligé de faire ca...
+    exec(`yt-dlp -j ${url}`, async (error, stdout, stderr) => {
+        // De plus yt-dlp écrit les warning dans stderr donc ca prend la tête
         if (error) {
-            // Si ya pas de vidéo osef
-            if (error.toString().includes("ERROR")) return;
-
-            // Vrai erreur
-            await message.channel.send({
-                content: `<@200227803189215232> J'ai pas réussi à recup la vidéo... (exec->error)\n \`\`\`${error.message}\`\`\``
-            });
-            console.error(`error: ${error.message}`);
-            return;
-        } else if (stderr) {
-            // Si ya pas de vidéo osef
-            if (stderr.includes("ERROR")) return;
-
-            // Vrai erreur
-            await message.channel.send({
-                content: `<@200227803189215232> J'ai pas réussi à recup la vidéo... (exec->stderr)\n \`\`\`${stderr}\`\`\``
-            });
-            console.error(`stderr: ${stderr}`);
             return;
         }
 
         await message.channel.sendTyping();
-        const j = JSON.parse(stdout);
+
+        let j = '';
+        try {
+            j = JSON.parse(stdout);
+        } catch (e) {
+            console.error(e);
+            await message.reply({
+                content: "Impossible de parse le JSON...", allowedMentions: {repliedUser: false}
+            });
+            return;
+        }
 
         const subredditRegex = new RegExp(/\/r\/([A-z]*)/i);
         const subreddit = j["webpage_url"].match(subredditRegex)[1];
@@ -71,22 +49,12 @@ module.exports = async (message) => {
                 iconURL: message.member.user.avatarURL({dynamic: true})
             });
 
-        const folderPath = '/tmp/';
-        const filename = `${uuidv1()}.mp4`;
+        const urls = j['urls'].split('\n');
 
-        if (!j["url"])
-            j["url"] = j["requested_formats"][0]["url"];
-
-        download(j['url'], folderPath, {filename: filename})
-            .then(async () => {
-                await message.channel.send({embeds: [embed]});
-                await message.channel.send({files: [`${folderPath}${filename}`]});
-                await message.delete();
-                fs.unlink(`${folderPath}${filename}`, (err) => {
-                    if (err) {
-                        console.error(err)
-                    }
-                })
-            })
+        // Si la vidéo n'a pas de son alors il faut la télécharger et merge avec ffmpeg
+        if (urls.length > 1)
+            await download_video_audio(message, urls[0], urls[1], embed);
+        else
+            await download_video(message, j['url'], embed);
     });
 }

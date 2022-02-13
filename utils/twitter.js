@@ -1,48 +1,17 @@
 const {exec} = require("child_process");
 const {MessageEmbed} = require("discord.js");
-const {v1: uuidv1} = require("uuid");
-const download = require("download");
-const fs = require("fs");
+const download_video = require("./download_video");
+const extract_url = require("./extract_url");
+
 
 module.exports = async (message) => {
-    const args = message.content.split(" ");
-
-    // Recup le lien
-    let url = ""
-    args.forEach((item) => {
-        if (item.includes("twitter.com")) url = item;
-    })
-
-    if (url === "") {
-        await message.channel.reply({
-            content: "Impossible de récup l'URL twitter...", allowedMentions: {repliedUser: false}
-        });
-        console.log('Erreur: URL Twitter impossible à recup.');
-        return;
-    }
+    const url = await extract_url(message, "twitter.com");
 
     // Real shit
-    exec(`youtube-dl -j ${url}`, async (error, stdout, stderr) => {
-        // yt-dl clc là dessus, des fois il trigger error et des fois stderr donc on est obligé de faire ca...
+    exec(`yt-dlp -j ${url}`, async (error, stdout, stderr) => {
+        // Si ya une erreur, ca va juster rien faire, et on verra si qlq ping sur le serveur
+        // De plus yt-dlp écrit les warning dans stderr donc ca prend la tête
         if (error) {
-            // Si ya pas de vidéo osef
-            if (error.toString().includes("ERROR")) return;
-
-            // Vrai erreur
-            await message.channel.send({
-                content: `<@200227803189215232> J'ai pas réussi à recup la vidéo... (exec->error)\n \`\`\`${error.message}\`\`\``
-            });
-            console.log(`error: ${error.message}`);
-            return;
-        } else if (stderr) {
-            // Si ya pas de vidéo osef
-            if (stderr.includes("ERROR")) return;
-
-            // Vrai erreur
-            await message.channel.send({
-                content: `<@200227803189215232> J'ai pas réussi à recup la vidéo... (exec->stderr)\n \`\`\`${stderr}\`\`\``
-            });
-            console.log(`stderr: ${stderr}`);
             return;
         }
 
@@ -90,19 +59,6 @@ module.exports = async (message) => {
                 iconURL: message.member.user.avatarURL({dynamic: true})
             });
 
-        const folderPath = '/tmp/';
-        const filename = `${uuidv1()}.mp4`;
-
-        download(j['url'], folderPath, {filename: filename})
-            .then(async () => {
-                await message.channel.send({embeds: [embed]});
-                await message.channel.send({files: [`${folderPath}${filename}`]});
-                await message.delete();
-                fs.unlink(`${folderPath}${filename}`, (err) => {
-                    if (err) {
-                        console.error(err)
-                    }
-                })
-            })
+        await download_video(message, j['url'], embed);
     });
 }

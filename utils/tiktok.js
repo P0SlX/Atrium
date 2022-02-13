@@ -1,38 +1,34 @@
 const {MessageEmbed} = require("discord.js");
-const {v1: uuidv1} = require("uuid");
-const download = require("download");
-const fs = require("fs");
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
+const download_video = require("./download_video");
+const extract_url = require("./extract_url");
 
-
-module.exports = async (message) => {
-    const args = message.content.split(" ");
-
-    // Recup le lien
-    let url = ""
-    args.forEach((item) => {
-        if (item.includes("http")) url = item;
-    })
+async function retreiveURL(message) {
+    const url = await extract_url(message, "tiktok.com");
 
     const tmp = await fetch(url);
     const regexID = new RegExp(/\/([0-9]+)/i);
     let match = null;
     try {
         match = tmp.url.match(regexID)[1];
+        return `https://api2.musical.ly/aweme/v1/aweme/detail/?aweme_id=${match}`
     } catch (e) {
         // C'est certainement un profil ou un lien sans vidéo car il ne trouve pas d'id
-        return;
+        return null;
     }
-    url = `https://api2.musical.ly/aweme/v1/aweme/detail/?aweme_id=${match}`;
+}
+
+module.exports = async (message) => {
+    const url = await retreiveURL(message);
+    if (!url) return;
 
     await message.channel.sendTyping();
 
+    // Fetch json
     let cpt = 1;
     let j = ""
     while (cpt < 5) {
         await fetch(url)
-            .catch(() => {
-            })
             .then(async data => {
                 // Obligé de try catch car des fois l'api renvoie un mauvais JSON
                 try {
@@ -43,8 +39,8 @@ module.exports = async (message) => {
             });
     }
 
-    if (j["aweme_detail"] === undefined)
-        await message.reply({content: "Le lien semble incorrect..."});
+    if (cpt !== 10)
+        await message.reply({content: "<@200227803189215232> Il est l'heure de changer de serveur !"});
 
     j = j["aweme_detail"];
 
@@ -66,19 +62,6 @@ module.exports = async (message) => {
             text: `Envoyé par ${message.member.user.username}`,
             iconURL: message.member.user.avatarURL({dynamic: true})
         });
-    const folderPath = '/tmp/';
-    const filename = `${uuidv1()}.mp4`;
 
-
-    download(j['video']['play_addr']['url_list'][0], folderPath, {filename: filename})
-        .then(async () => {
-            await message.channel.send({embeds: [embed]});
-            await message.channel.send({files: [`${folderPath}${filename}`]});
-            await message.delete();
-            fs.unlink(`${folderPath}${filename}`, (err) => {
-                if (err) {
-                    console.error(err)
-                }
-            })
-        })
+    await download_video(message, j['video']['play_addr']['url_list'][0], embed);
 }
