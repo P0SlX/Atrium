@@ -8,16 +8,28 @@ module.exports = async (message) => {
     const url = await extract_url(message, "twitter.com");
 
     // Real shit
-    exec(`yt-dlp -j ${url}`, async (error, stdout, stderr) => {
+    exec(`yt-dlp -j ${url}`, {timeout: 30000}, async (error, stdout, stderr) => {
         // Si ya une erreur, ca va juster rien faire, et on verra si qlq ping sur le serveur
         // De plus yt-dlp écrit les warning dans stderr donc ca prend la tête
-        if (error) {
-            return;
-        }
+        if (error) return;
+        if (stdout.length === 0) return;
 
         await message.channel.sendTyping();
 
-        const j = JSON.parse(stdout);
+        let j = '';
+        try {
+            j = JSON.parse(stdout);
+        } catch (e) {
+            console.error(e);
+            console.error(url);
+            await message.reply({
+                content: "Impossible de parse le JSON... Contenue du JSON :", allowedMentions: {repliedUser: false}
+            });
+            await message.reply({
+                content: j, allowedMentions: {repliedUser: false}
+            });
+            return;
+        }
 
         // Le tweet est vide avec juste une image / vidéo
         if (j["description"].split(' ')[0].includes('http')) {

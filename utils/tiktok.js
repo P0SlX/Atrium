@@ -6,10 +6,12 @@ const extract_url = require("./extract_url");
 async function retreiveURL(message) {
     const url = await extract_url(message, "tiktok.com");
 
+    // Recupère l'id de la vidéo en suitant les redirections
     const tmp = await fetch(url);
     const regexID = new RegExp(/\/([0-9]+)/i);
     let match = null;
     try {
+        // Construction de l'url de l'API
         match = tmp.url.match(regexID)[1];
         return `https://api2.musical.ly/aweme/v1/aweme/detail/?aweme_id=${match}`
     } catch (e) {

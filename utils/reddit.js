@@ -8,7 +8,7 @@ module.exports = async (message) => {
     const url = await extract_url(message, "reddit.com");
 
     // Real shit
-    exec(`yt-dlp -j ${url}`, async (error, stdout, stderr) => {
+    exec(`yt-dlp -j ${url}`, {timeout: 30000}, async (error, stdout, stderr) => {
         // De plus yt-dlp écrit les warning dans stderr donc ca prend la tête
         if (error) {
             return;
