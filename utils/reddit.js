@@ -10,9 +10,8 @@ module.exports = async (message) => {
     // Real shit
     exec(`yt-dlp -j ${url}`, {timeout: 30000}, async (error, stdout, stderr) => {
         // De plus yt-dlp écrit les warning dans stderr donc ca prend la tête
-        if (error) {
-            return;
-        }
+        if (error) return;
+        if (stdout.length === 0) return;
 
         await message.channel.sendTyping();
 
