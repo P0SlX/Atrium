@@ -26,6 +26,17 @@ module.exports = async (message) => {
             return;
         }
 
+        const urls = j['urls'].split('\n');
+
+        // Check if there is a video in j['urls']
+        try {
+            if (urls[0].includes("jpg") || urls[0].includes("png"))
+                return;
+        } catch (e) {
+            // No video
+            return;
+        }
+
         const subredditRegex = new RegExp(/\/r\/([A-z]*)/i);
         const subreddit = j["webpage_url"].match(subredditRegex)[1];
 
@@ -48,7 +59,6 @@ module.exports = async (message) => {
                 iconURL: message.member.user.avatarURL({dynamic: true})
             });
 
-        const urls = j['urls'].split('\n');
 
         // Si la vidéo n'a pas de son alors il faut la télécharger et merge avec ffmpeg
         if (urls.length > 1)
