@@ -13,8 +13,6 @@ module.exports = async (message) => {
         if (error) return;
         if (stdout.length === 0) return;
 
-        await message.channel.sendTyping();
-
         let j = '';
         try {
             j = JSON.parse(stdout);
@@ -36,6 +34,8 @@ module.exports = async (message) => {
             // No video
             return;
         }
+
+        await message.channel.sendTyping();
 
         const subredditRegex = new RegExp(/\/r\/([A-z]*)/i);
         const subreddit = j["webpage_url"].match(subredditRegex)[1];
