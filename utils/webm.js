@@ -34,9 +34,9 @@ module.exports = async (message) => {
                             embed.setTitle(message.content);
 
                         await message.channel.send({embeds: [embed]});
+                        await message.delete();
                         embedSent = true;
                     }
-
 
                     await message.channel.send({files: [`${folderPath}${filename}.mp4`]});
                     fs.unlink(`${folderPath}${filename}.webm`, (err) => {
@@ -46,5 +46,4 @@ module.exports = async (message) => {
                 });
             })
     }
-    await message.delete();
 }
