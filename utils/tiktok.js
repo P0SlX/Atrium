@@ -4,7 +4,7 @@ const download_video = require("./download_video");
 const extract_url = require("./extract_url");
 
 async function retreiveURL(message) {
-    const url = await extract_url(message, "tiktok.com");
+    const url = await extract_url(message);
 
     // Recupère l'id de la vidéo en suitant les redirections
     const tmp = await fetch(url);
@@ -65,5 +65,13 @@ module.exports = async (message) => {
             iconURL: message.member.user.avatarURL({dynamic: true})
         });
 
-    await download_video(message, j['video']['play_addr']['url_list'][0], embed);
+    // Spoiler check
+    const spoilerRegex = new RegExp(/([|]{2})/gi);
+    const spoiler = message.content.match(spoilerRegex);
+
+    if (spoiler)
+        embed.setDescription("||" + j["description"] + "||")
+
+
+    await download_video(message, j['video']['play_addr']['url_list'][0], embed, spoiler);
 }

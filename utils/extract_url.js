@@ -1,10 +1,6 @@
-module.exports = async (message, filter) => {
-    const args = message.content.split(" ");
-
-    let url = ""
-    args.forEach((item) => {
-        if (item.includes(filter)) url = item;
-    })
+module.exports = async (message) => {
+    const regexURL = new RegExp(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/gi);
+    const url = message.content.match(regexURL)[0];
 
     if (url === "") {
         await message.channel.reply({

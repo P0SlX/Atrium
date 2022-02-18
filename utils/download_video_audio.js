@@ -4,11 +4,14 @@ const fs = require("fs");
 const {exec} = require("child_process");
 
 
-module.exports = async (message, video, audio, embed) => {
+module.exports = async (message, video, audio, embed, spoiler) => {
     const folderPath = '/tmp/';
     const video_filename = `${uuidv1()}.mp4`;
     const audio_filename = `${uuidv1()}.mp4`;
-    const output_filename = `${uuidv1()}.mp4`;
+    let output_filename = `${uuidv1()}.mp4`;
+
+    if (spoiler)
+        output_filename = `SPOILER_${uuidv1()}.mp4`;
 
     download(video, folderPath, {filename: video_filename})
         .then(async () => {
@@ -21,9 +24,14 @@ module.exports = async (message, video, audio, embed) => {
                             return;
                         }
 
-                        await message.channel.send({embeds: [embed]});
-                        await message.channel.send({files: [`${folderPath}${output_filename}`]});
-                        await message.delete();
+                        try {
+                            await message.channel.send({embeds: [embed]});
+                            await message.channel.send({files: [`${folderPath}${output_filename}`]});
+                            await message.delete();
+                        } catch (e) {
+                            await message.channel.send({content: "Vidéo trop lourde pour être envoyée. Achète Nitro connard"});
+                        }
+
                         await fs.unlink(`${folderPath}${video_filename}`, (err) => {
                             if (err) {
                                 console.log(err);

@@ -5,7 +5,7 @@ const download_video_audio = require("./download_video_audio");
 const extract_url = require("./extract_url");
 
 module.exports = async (message) => {
-    const url = await extract_url(message, "reddit.com");
+    const url = await extract_url(message);
 
     // Real shit
     exec(`yt-dlp -j ${url}`, {timeout: 30000}, async (error, stdout, stderr) => {
@@ -59,11 +59,17 @@ module.exports = async (message) => {
                 iconURL: message.member.user.avatarURL({dynamic: true})
             });
 
+        // Spoiler check
+        const spoilerRegex = new RegExp(/([|]{2})/gi);
+        const spoiler = message.content.match(spoilerRegex);
+
+        if (spoiler)
+            embed.setDescription("||" + j["description"] + "||")
 
         // Si la vidéo n'a pas de son alors il faut la télécharger et merge avec ffmpeg
         if (urls.length > 1)
-            await download_video_audio(message, urls[0], urls[1], embed);
+            await download_video_audio(message, urls[0], urls[1], embed, spoiler);
         else
-            await download_video(message, j['url'], embed);
+            await download_video(message, j['url'], embed, spoiler);
     });
 }

@@ -5,7 +5,7 @@ const extract_url = require("./extract_url");
 
 
 module.exports = async (message) => {
-    const url = await extract_url(message, "twitter.com");
+    const url = await extract_url(message);
 
     // Real shit
     exec(`yt-dlp -j ${url}`, {timeout: 30000}, async (error, stdout, stderr) => {
@@ -62,15 +62,22 @@ module.exports = async (message) => {
                 iconURL: "https://abs.twimg.com/responsive-web/client-web/icon-default.ee534d85.png",
                 url: j["uploader_url"]
             })
+            .setDescription(j["description"])
             .addField('Likes', j["like_count"].toString(), true)
             .addField('Retweets', j["repost_count"].toString(), true)
-            .setDescription(j["description"])
             .setTimestamp(new Date(j["timestamp"] * 1000))
             .setFooter({
                 text: `Envoyé par ${message.member.user.username}`,
                 iconURL: message.member.user.avatarURL({dynamic: true})
             });
 
-        await download_video(message, j['url'], embed);
+        // Spoiler check
+        const spoilerRegex = new RegExp(/([|]{2})/gi);
+        const spoiler = message.content.match(spoilerRegex);
+
+        if (spoiler)
+            embed.setDescription("||" + j["description"] + "||")
+
+        await download_video(message, j['url'], embed, spoiler);
     });
 }
