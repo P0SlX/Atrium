@@ -2,6 +2,7 @@ const fs = require('fs');
 const {Client, Collection, Intents} = require('discord.js');
 const {token} = require('./config.json');
 const sqlite3 = require('sqlite3').verbose();
+const cron = require('cron');
 
 const client = new Client({
     intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MEMBERS],
@@ -43,4 +44,12 @@ global.CLIENT = client;
 // db.run('CREATE TABLE deleted(id integer primary key autoincrement, message text, date datetime)');
 
 
-client.login(token);
+client.login(token).then(() => {
+    const channel = client.channels.cache.get('853019023544549376');
+    // channel.send({files: [`${folderPath}${filename}`]});
+    const cronJob = cron.job('0 17 * * *', async () => {
+        channel.send({content: "IL EST 17H !",files: ['./resources/travail_termine.mp4']});
+    });
+
+    cronJob.start();
+});
