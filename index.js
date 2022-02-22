@@ -44,12 +44,12 @@ global.CLIENT = client;
 // db.run('CREATE TABLE deleted(id integer primary key autoincrement, message text, date datetime)');
 
 
-client.login(token).then(() => {
-    const channel = client.channels.cache.get('853019023544549376');
-    // channel.send({files: [`${folderPath}${filename}`]});
+client.login(token).then(async () => {
     const cronJob = cron.job('0 17 * * *', async () => {
-        channel.send({content: "IL EST 17H !",files: ['./resources/travail_termine.mp4']});
+        const channel = await client.channels.cache.get('667053408636633088');
+        await channel.send({content: "IL EST 17H !", files: ['./resources/travail_termine.mp4']});
     });
+    client.user.setActivity("des canettes", { type: "STREAMING", url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" })
 
     cronJob.start();
 });
