@@ -45,7 +45,7 @@ global.CLIENT = client;
 
 
 client.login(token).then(async () => {
-    const cronJob = cron.job('0 17 * * *', async () => {
+    const cronJob = cron.job('0 17 * * 1-5', async () => {
         const channel = await client.channels.cache.get('667053408636633088');
         await channel.send({content: "IL EST 17H !", files: ['./resources/travail_termine.mp4']});
     });
