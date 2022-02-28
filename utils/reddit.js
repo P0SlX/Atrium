@@ -10,7 +10,7 @@ module.exports = async (message) => {
     if (url.includes("/user/")) return;
 
     // Real shit
-    exec(`yt-dlp -j ${url}`, {timeout: 30000}, async (error, stdout, stderr) => {
+    exec(`timeout 30 yt-dlp -j ${url}`, async (error, stdout, stderr) => {
         // De plus yt-dlp écrit les warning dans stderr donc ca prend la tête
         if (error) return;
         if (stdout.length === 0) return;
@@ -66,7 +66,7 @@ module.exports = async (message) => {
         const spoiler = message.content.match(spoilerRegex);
 
         if (spoiler)
-            embed.setDescription("||" + j["description"] + "||")
+            embed.setDescription("||" + j["title"] + "||")
 
         // Si la vidéo n'a pas de son alors il faut la télécharger et merge avec ffmpeg
         if (urls.length > 1)

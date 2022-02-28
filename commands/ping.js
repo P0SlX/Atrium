@@ -21,7 +21,7 @@ module.exports = {
         if (interaction.options.getInteger('count')) c = interaction.options.getInteger('count');
 
         await interaction.reply(`Ping de \`${ip}\` en cours...`);
-        exec(`ping ${ip} -i 0.2 -c ${c} | grep -B 1 avg`, {timeout: 30000}, async (error, stdout, stderr) => {
+        exec(`timeout 30 ping ${ip} -i 0.2 -c ${c} | grep -B 1 avg`, async (error, stdout, stderr) => {
             if (error || stderr) {
                 await interaction.editReply({content: `Impossible de ping ${ip}`});
                 return;

@@ -5,6 +5,9 @@ module.exports = {
         .setName('refresh')
         .setDescription('Refresh tout les rôles et les sauvegardes'),
     async execute(interaction) {
+
+        // TODO: delete all roles and loop over guild and add them back
+
         interaction.guild.members.fetch().then((members) => {
             const db = global.DB;
 

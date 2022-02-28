@@ -17,7 +17,7 @@ module.exports = async (message, video, audio, embed, spoiler) => {
         .then(async () => {
             download(audio, folderPath, {filename: audio_filename})
                 .then(async () => {
-                    exec(`ffmpeg -i ${folderPath}${video_filename} -i ${folderPath}${audio_filename} -c copy ${folderPath}${output_filename}`, async (error, stdout, stderr) => {
+                    exec(`timeout 300 ffmpeg -i ${folderPath}${video_filename} -i ${folderPath}${audio_filename} -c copy ${folderPath}${output_filename}`, async (error, stdout, stderr) => {
                         if (error) {
                             console.error(`ffmpeg error: ${error}`);
                             await message.channel.send({content: "Error while merging audio and video"});

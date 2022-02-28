@@ -12,6 +12,7 @@ module.exports = {
         db.serialize(() => {
             db.all(`SELECT *
                     FROM deleted
+                    WHERE guildId=${interaction.guildId}
                     ORDER BY deleted.date DESC`,
                 async (err, rows) => {
                     if (err) {

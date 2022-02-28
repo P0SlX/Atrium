@@ -10,8 +10,8 @@ module.exports = {
 
         const db = global.DB;
         db.serialize(() => {
-            db.run(`INSERT INTO deleted VALUES (?, ?, ?, ?)`,
-                [message.content, message.createdTimestamp, message.member.id, message.channel.name],
+            db.run(`INSERT INTO deleted VALUES (?, ?, ?, ?, ?)`,
+                [message.content, message.createdTimestamp, message.member.id, message.channel.name, message.guildId],
                 (err) => {
                     if (err) console.error(err.message);
                 });

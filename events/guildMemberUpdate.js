@@ -9,6 +9,8 @@ module.exports = {
 
         const db = global.DB;
 
+        // TODO
+        //  id + guild_id en clé primaire
         const getUser = `SELECT id
                      FROM ROLES
                      WHERE id=?`;

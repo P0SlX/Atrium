@@ -16,7 +16,7 @@ module.exports = async (message) => {
             .then(async () => {
 
                 // Convertion du fichier en MP4
-                exec(`ffmpeg -i ${folderPath}${filename}.webm -crf 28 ${folderPath}${filename}.mp4`, async (error, stdout, stderr) => {
+                exec(`timeout 300 ffmpeg -i ${folderPath}${filename}.webm -crf 28 ${folderPath}${filename}.mp4`, async (error, stdout, stderr) => {
                     if (error) return message.channel.send({content: "Impossible de convertir la vidéo..."});
 
                     // Envoi de l'embed qu'une seule fois si il y a plusieurs vidéos

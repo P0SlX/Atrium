@@ -4,6 +4,8 @@ module.exports = {
     async execute(member) {
         const db = global.DB;
 
+        // TODO
+        //  id + guild_id dans le where
         const sql = `SELECT roles, nickname
                      FROM ROLES
                      WHERE id=?`;
