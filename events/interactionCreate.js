@@ -13,7 +13,11 @@ module.exports = {
             await command.execute(interaction);
         } catch (error) {
             console.error(error);
-            return interaction.reply({content: '<@200227803189215232> Ya une couille dans le pâté là...'});
+            try {
+                return interaction.reply({content: '<@200227803189215232> Ya une couille dans le pâté là...'});
+            } catch (error) {
+                console.error(error);
+            }
         }
     },
 };
