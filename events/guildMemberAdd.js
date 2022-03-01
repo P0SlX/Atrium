@@ -4,14 +4,12 @@ module.exports = {
     async execute(member) {
         const db = global.DB;
 
-        // TODO
-        //  id + guild_id dans le where
         const sql = `SELECT roles, nickname
                      FROM ROLES
                      WHERE id=?`;
 
         db.serialize(() => {
-            db.get(sql, [member.id.toString()], (err, row) => {
+            db.get(sql, [member.id.toString() + member.guild.id.toString()], (err, row) => {
                 if (err) console.error(err.message);
 
                 // Nouvel utilisateur
