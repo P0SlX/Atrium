@@ -13,12 +13,12 @@ module.exports = async (message, url, embed, spoiler) => {
 
     download(url, folderPath, {filename: filename})
         .then(async () => {
+            await message.channel.send({embeds: [embed]});
             try {
-                await message.channel.send({embeds: [embed]});
                 await message.channel.send({files: [`${folderPath}${filename}`]});
                 await message.delete();
             } catch (e) {
-                await message.channel.send({content: "Vidéo trop lourde pour être envoyée. Achète Nitro connard"});
+                await message.channel.send({content: url});
             }
             fs.unlink(`${folderPath}${filename}`, (err) => {
                 if (err) {
