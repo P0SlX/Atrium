@@ -4,6 +4,7 @@ module.exports = {
     async execute(message) {
         if (message.content == null) return;
         if (message.content.length === 0 ) return;
+        if (message.content.includes('http')) return;
 
         // ^^
         if (message.content === "admin") return;
