@@ -10,6 +10,10 @@ module.exports = {
     name: 'messageCreate',
     once: false,
     async execute(message) {
+        if (message.author.bot) return;
+
+        const random = Math.floor(Math.random() * 1000) + 1;
+
         if (message.content.includes("twitter.com"))
             await twitter(message);
         else if (message.content.includes("tiktok.com"))
@@ -22,5 +26,8 @@ module.exports = {
             await webm(message);
         else if (message.content === "admin")
             await admin(message);
+        else if (random === 50) {
+            message.reply({content: "https://tenor.com/view/who-asked-nobody-asked-nobody-cares-damn-thats-crazy-gif-20130694"})
+        }
     },
 };
