@@ -3,3 +3,4 @@ config.json
 .idea/
 prout.db
 yarn-error*
+deploy-commands.js
