@@ -18,7 +18,8 @@ module.exports = {
 			.addChoice('Hugo', '1 Trick Zouglou')
 			.addChoice('Quentin', 'Kata go brrr')
 			.addChoice('Dariusz', 'KC Monke')
-			.addChoice('Thomas', 'Spërmasturm'),
+			.addChoice('Thomas', 'Spërmasturm')
+			.addChoice('Tia', 'ifeelyourfather'),
 		),
 	async execute(interaction) {
 
