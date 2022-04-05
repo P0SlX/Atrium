@@ -18,14 +18,14 @@ module.exports = {
 			.addChoice('Hugo', '1 Trick Zouglou')
 			.addChoice('Quentin', 'Kata go brrr')
 			.addChoice('Dariusz', 'KC Monke')
-			.addChoice('Thomas', 'Spërmasturm'),
+			.addChoice('Thomas', 'Spërmasturm')
+			.addChoice('Tia', 'ifeelyourfather'),
 		),
 	async execute(interaction) {
 
 		let param;
 		if (/\s/.test(interaction.options.getString('pseudo'))) {
 			param = encodeURIComponent(interaction.options.getString('pseudo').trim());
-			console.log(param);
 		}
 		else {
 			param = interaction.options.getString('pseudo');
@@ -64,7 +64,7 @@ module.exports = {
 		await con.connect(function(err) {
 			if (err) throw err;
 
-			const req = `SELECT SUM(kills), SUM(deaths), SUM(assists), summoner_name, SUM(total_minions_killed), SUM(gold_earned), AVG(kill_participation) 
+			const req = `SELECT SUM(kills), SUM(deaths), SUM(assists), summoner_name, SUM(total_minions_killed), SUM(gold_earned), AVG(kill_participation), COUNT(idgame) 
                          FROM matchs
                          WHERE idsum='${puuid}'`;
 
@@ -77,6 +77,7 @@ module.exports = {
 				const totalcs = result[0]['SUM(total_minions_killed)'];
 				const golde = result[0]['SUM(gold_earned)'];
 				const kp = result[0]['AVG(kill_participation)'];
+				const nbgames = result[0]['COUNT(idgame)'];
 
 				let ranksoloq = "";
 
@@ -86,7 +87,7 @@ module.exports = {
 				else {
 					for (let i = 0; i < Object.keys(rank).length; i++) {
 						if (rank[i]["queueType"] === "RANKED_SOLO_5x5") {
-							ranksoloq = rank[0]["tier"] + " " + rank[0]["rank"] + " " + rank[0]["leaguePoints"] + " LP";
+							ranksoloq = rank[i]["tier"] + " " + rank[i]["rank"] + " " + rank[i]["leaguePoints"] + " LP";
 						}
 						else {
 							ranksoloq = 'N/A';
@@ -108,6 +109,7 @@ module.exports = {
 					.addField('Minions tués', totalcs.toString(), true)
 					.addField('Gold gagnés', golde.toString(), true)
 					.addField('Kills participation', kp.toFixed(2), true)
+					.setFooter('Données basées sur ' + nbgames + ' games')
 					.setTimestamp(new Date());
 
 				await interaction.reply({ embeds: [profile] });

@@ -45,9 +45,9 @@ global.CLIENT = client;
 
 
 client.login(token).then(async () => {
-    const cronJob = cron.job('0 17 * * 1-5', async () => {
+    const cronJob = cron.job('0,30 17 * * 1-5', async () => {
         const channel = await client.channels.cache.get('667053408636633088');
-        await channel.send({content: "IL EST 17H !", files: ['./resources/travail_termine.mp4']});
+        await channel.send({content: "Finito la journée", files: ['./resources/travail_termine.mp4']});
     });
     client.user.setActivity("des canettes", { type: "STREAMING", url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" })
 
