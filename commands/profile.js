@@ -13,13 +13,20 @@ module.exports = {
 			.addChoice('Florian', 'P0SlX')
 			.addChoice('Xavier', 'AIiasss')
 			.addChoice('Matteis', 'KC Mateus')
+			.addChoice('Matteis (Maetis02)', 'Maetis02')
+			.addChoice('Matteis (Maetiss)', 'Maetiss')
+			.addChoice('Matteis (GnarBroken)', 'GnarBroken')
 			.addChoice('Erwan', 'CümStørm')
 			.addChoice('Dydou', 'KC Dydou')
 			.addChoice('Hugo', '1 Trick Zouglou')
 			.addChoice('Quentin', 'Kata go brrr')
 			.addChoice('Dariusz', 'KC Monke')
 			.addChoice('Thomas', 'Spërmasturm')
-			.addChoice('Tia', 'ifeelyourfather'),
+			.addChoice('Tia', 'ifeelyourfather')
+			.addChoice('Dydou (ΣσςΤτΥυΦφΧχΨψΩω)', 'ΣσςΤτΥυΦφΧχΨψΩω')
+			.addChoice('Dydou (imjustepicbyskio)', 'imjustepicbyskio')
+			.addChoice('Tiago', 'Icare Forever')
+			.addChoice('Cyprien', 'ZaikoSnoW'),
 		),
 	async execute(interaction) {
 
