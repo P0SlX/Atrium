@@ -1,11 +1,11 @@
 [Unit]
-Description=Démarre Prout aussi bien que ta daronne.
+Description=Service de Atrium.
 
 [Service]
 Type=simple
 Restart=always
 RestartSec=3
-ExecStart=/usr/bin/node /home/ubuntu/prout-js/index.js
+ExecStart=/usr/bin/node /home/ubuntu/atrium/index.js
 
 [Install]
 WantedBy=multi-user.target
