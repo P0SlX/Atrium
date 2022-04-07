@@ -1,6 +1,6 @@
 node_modules/
 config.json
 .idea/
-prout.db
+atrium.db
 yarn-error*
 deploy-commands.js
