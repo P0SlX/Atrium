@@ -31,7 +31,7 @@ for (const file of eventFiles) {
 }
 
 // open the database
-const db = new sqlite3.Database('prout.db', sqlite3.OPEN_READWRITE, (err) => {
+const db = new sqlite3.Database('atrium.db', sqlite3.OPEN_READWRITE, (err) => {
     if (err) {
         console.error(err.message);
     }
