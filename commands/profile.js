@@ -3,31 +3,14 @@ const mysql = require('mysql');
 const { MessageEmbed } = require('discord.js');
 // eslint-disable-next-line no-shadow
 const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
+const { host, user, password, database } = require('../config.json');
 
 
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('profile')
 		.setDescription('Affiche un profile lol')
-		.addStringOption(option => option.setName('pseudo').setDescription('Profile à regarder').setRequired(true)
-			.addChoice('Florian', 'P0SlX')
-			.addChoice('Xavier', 'AIiasss')
-			.addChoice('Matteis', 'KC Mateus')
-			.addChoice('Matteis (Maetis02)', 'Maetis02')
-			.addChoice('Matteis (Maetiss)', 'Maetiss')
-			.addChoice('Matteis (GnarBroken)', 'GnarBroken')
-			.addChoice('Erwan', 'CümStørm')
-			.addChoice('Dydou', 'KC Dydou')
-			.addChoice('Hugo', '1 Trick Zouglou')
-			.addChoice('Quentin', 'Kata go brrr')
-			.addChoice('Dariusz', 'KC Monke')
-			.addChoice('Thomas', 'Spërmasturm')
-			.addChoice('Tia', 'ifeelyourfather')
-			.addChoice('Dydou (ΣσςΤτΥυΦφΧχΨψΩω)', 'ΣσςΤτΥυΦφΧχΨψΩω')
-			.addChoice('Dydou (imjustepicbyskio)', 'imjustepicbyskio')
-			.addChoice('Tiago', 'Icare Forever')
-			.addChoice('Cyprien', 'ZaikoSnoW'),
-		),
+		.addStringOption(option => option.setName('pseudo').setDescription('Profile à regarder').setRequired(true)),
 	async execute(interaction) {
 
 		let param;
@@ -62,10 +45,10 @@ module.exports = {
 		const puuid = sum['puuid'];
 
 		const con = mysql.createConnection({
-			host: "141.147.19.210",
-			user: "statslol",
-			password: "hCYG6]0*4@iE(yZ)",
-			database: "statslol",
+			host: host,
+			user: user,
+			password: password,
+			database: database,
 		});
 
 		await con.connect(function(err) {
@@ -116,7 +99,7 @@ module.exports = {
 					.addField('Minions tués', totalcs.toString(), true)
 					.addField('Gold gagnés', golde.toString(), true)
 					.addField('Kills participation', kp.toFixed(2), true)
-					.setFooter('Données basées sur ' + nbgames + ' games')
+					.setFooter({ text: 'Données basées sur ' + nbgames + ' games' })
 					.setTimestamp(new Date());
 
 				await interaction.reply({ embeds: [profile] });

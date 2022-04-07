@@ -3,6 +3,7 @@ const mysql = require('mysql');
 const { MessageEmbed } = require('discord.js');
 // eslint-disable-next-line no-shadow
 const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
+const { host, user, password, database } = require('../config.json');
 
 
 module.exports = {
@@ -37,10 +38,10 @@ module.exports = {
 		const puuid = sum['puuid'];
 
 		const con = mysql.createConnection({
-			host: "141.147.19.210",
-			user: "statslol",
-			password: "hCYG6]0*4@iE(yZ)",
-			database: "statslol",
+			host: host,
+			user: user,
+			password: password,
+			database: database,
 		});
 
 		let ranksoloq = undefined;
