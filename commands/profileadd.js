@@ -1,9 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const mysql = require('mysql');
-const { MessageEmbed } = require('discord.js');
-// eslint-disable-next-line no-shadow
-const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 const { host, user, password, database } = require('../config.json');
+const riot_api = require('../utils/riot_api');
 
 
 module.exports = {
@@ -11,31 +9,13 @@ module.exports = {
 		.setName('profileadd')
 		.setDescription('Ajouter un profile lol à regarder')
 		.addStringOption(option => option.setName('pseudo').setDescription('Profile à ajouter').setRequired(true)),
-
 	async execute(interaction) {
 
-		let param;
-		if (/\s/.test(interaction.options.getString('pseudo'))) {
-			param = encodeURIComponent(interaction.options.getString('pseudo').trim());
-		}
-		else {
-			param = interaction.options.getString('pseudo');
-		}
+		const res = await riot_api(interaction, false);
+		if (res === undefined) return;
 
-		let sum = undefined;
-		await fetch('https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/' + param + '?api_key=RGAPI-51d60eda-093b-4e89-8b9b-f04f7ae8b1f4')
-			.then(async response => sum = await response.json());
-		if (sum.status >= 400) {
-			throw new Error("Bad response from server");
-		}
-
-		let rank = await fetch('https://euw1.api.riotgames.com/lol/league/v4/entries/by-summoner/' + sum["id"] + '?api_key=RGAPI-51d60eda-093b-4e89-8b9b-f04f7ae8b1f4');
-		if (rank.status >= 400) {
-			throw new Error("Bad response from server");
-		}
-		rank = await rank.json();
-
-		const puuid = sum['puuid'];
+		// Évite de timout si le serveur met du temps à répondre
+		await interaction.reply({ content: "Ajout du profil en cours...", ephemeral: true });
 
 		const con = mysql.createConnection({
 			host: host,
@@ -44,52 +24,44 @@ module.exports = {
 			database: database,
 		});
 
-		let ranksoloq = undefined;
-		let rankflex = undefined;
+		let rankflex;
+		let ranksoloq = rankflex = {
+			"tier": "N/A",
+			"rank": "",
+			"leaguePoints": 0,
+			"wins": 0,
+			"losses": 0,
+		};
 
-		if (Object.keys(rank).length > 0) {
-			for (let i = 0; i < Object.keys(rank).length; i++) {
-				if (rank[i]["queueType"] === "RANKED_SOLO_5x5") {
-					ranksoloq = rank[i];
+
+		if (res["rank"].length > 0) {
+			for (const rank of res.rank) {
+				if (rank["queueType"] === "RANKED_SOLO_5x5") {
+					ranksoloq = rank;
 				}
-				else if (rank[i]["queueType"] === "RANKED_FLEX_SR") {
-					rankflex = rank[i];
+				if (rank["queueType"] === "RANKED_FLEX_SR") {
+					rankflex = rank;
 				}
 			}
 		}
 
-		if (ranksoloq === undefined) {
-			ranksoloq = {};
-			ranksoloq['tier'] = 'N/A';
-			ranksoloq['rank'] = '';
-			ranksoloq['leaguePoints'] = 0;
-			ranksoloq['wins'] = 0;
-			ranksoloq['losses'] = 0;
-		}
 
-		if (rankflex === undefined) {
-			rankflex = {};
-			rankflex['tier'] = 'N/A';
-			rankflex['rank'] = '';
-			rankflex['leaguePoints'] = 0;
-			rankflex['wins'] = 0;
-			rankflex['losses'] = 0;
-		}
+		const req = `INSERT INTO accounts VALUES ("${res["sum"]['puuid']}", "${res["sum"]['name']}", ${res["sum"]['summonerLevel']}, ${res["sum"]['profileIconId']}, "${ranksoloq['tier']} ${ranksoloq['rank']}", ${ranksoloq['leaguePoints']}, ${ranksoloq['wins']}, ${ranksoloq['losses']}, "${rankflex['tier']} ${rankflex['rank']}", ${rankflex['leaguePoints']}, ${rankflex['wins']}, ${rankflex['losses']});`;
 
-		const req = 'INSERT INTO accounts VALUES (' + '"' + puuid + '", "' + sum['name'] + '", ' + sum['summonerLevel'] + ', ' + sum['profileIconId'] + ', "' + ranksoloq['tier'] + ' ' + ranksoloq['rank'] + '", ' + ranksoloq['leaguePoints'] + ', ' + ranksoloq['wins'] + ', ' + ranksoloq['losses'] + ', "' + rankflex['tier'] + ' ' + rankflex['rank'] + '", ' + rankflex['leaguePoints'] + ', ' + rankflex['wins'] + ', ' + rankflex['losses'] + ');';
 		await con.connect(function(err) {
 			if (err) throw err;
 			con.query(req, async function(err) {
 				if (err) {
 					if (err.toString().includes("ER_DUP_ENTRY")) {
-						await interaction.reply({ content: "Le compte est déjà enregistré", ephemeral: true });
+						await interaction.editReply({ content: "Le compte est déjà enregistré", ephemeral: true });
 					}
 					else {
-						throw err;
+						console.error(err);
+						await interaction.editReply({ content: `Erreur : \`${err}\``, ephemeral: true });
 					}
 				}
 				else {
-					await interaction.reply({ content: "Le compte a été ajouté", ephemeral: true });
+					await interaction.editReply({ content: "Le compte a été ajouté avec succès", ephemeral: true });
 				}
 			});
 		});

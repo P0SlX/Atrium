@@ -1,7 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const mysql = require('mysql');
 const { MessageEmbed } = require('discord.js');
-// eslint-disable-next-line no-shadow
 const { host, user, password, database } = require('../config.json');
 
 
@@ -14,7 +13,7 @@ module.exports = {
 			.addChoice('Flex', 'flex'),
 		),
 
-	execute: async function(interaction) {
+	async execute(interaction) {
 		const con = mysql.createConnection({
 			host: host,
 			user: user,
@@ -38,7 +37,7 @@ module.exports = {
 					for (let i = 0; i < Object.keys(result).length; i++) {
 						const soloq = res[i]['ranksoloq'].split(' ');
 						res[i]['classementsoloq'] = ranks.indexOf(soloq[0]);
-						if (soloq[0] != 'N/A') res[i]['classementsoloq'] += romain.indexOf(soloq[1]) / 4;
+						if (soloq[0] !== 'N/A') res[i]['classementsoloq'] += romain.indexOf(soloq[1]) / 4;
 						res[i]['classementsoloq'] += res[i]['lpsoloq'] / 400;
 						res[i]['ranksoloq'] = soloq[0].toLowerCase() + ' ' + soloq[1];
 					}
