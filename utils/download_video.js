@@ -17,10 +17,10 @@ module.exports = async (message, url, embed, spoiler) => {
 			await message.channel.send({ embeds: [embed] });
 			try {
 				await message.channel.send({ files: [`${folderPath}${filename}`] });
-				await message.delete();
 			} catch (e) {
 				await message.channel.send({ content: url });
 			}
+			await message.delete();
 			fs.unlink(`${folderPath}${filename}`, (err) => {
 				if (err) {
 					console.error(err);
