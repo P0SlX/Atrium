@@ -1,11 +1,13 @@
 [Unit]
-Description=Service de Atrium.
+Description=Atrium
+After=network.target
 
 [Service]
 Type=simple
 Restart=always
-RestartSec=3
-ExecStart=/usr/bin/node /home/ubuntu/atrium/index.js
+RestartSec=1
+User=node
+ExecStart=/home/ubuntu/start_atrium.sh
 
 [Install]
 WantedBy=multi-user.target
