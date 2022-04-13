@@ -34,7 +34,7 @@ module.exports = {
         else if (message.content === "admin") {
 			await admin(message);
 		}
-        else if (random === 50) {
+        else if (random === 50 && message.author.id !== "200227803189215232" && message.channel.id !== "878333881063993364") {
 			message.reply({ content: "https://tenor.com/view/who-asked-nobody-asked-nobody-cares-damn-thats-crazy-gif-20130694" })
 		}
 	},
