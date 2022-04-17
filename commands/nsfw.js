@@ -23,7 +23,10 @@ module.exports = {
 			.addChoice('4K', '4k'),
 		),
 	async execute(interaction) {
+		const logger = global.LOGGER;
+
 		if (!interaction.channel.nsfw) {
+			logger.info(`${interaction.user.username} à essayé de faire un /nsfw mais n'est pas dans un channel nsfw`);
 			return interaction.reply({
 				content: 'Cette commande ne peut être utilisée que dans un salon NSFW.',
 				ephemeral: true,
@@ -39,6 +42,7 @@ module.exports = {
 			const json = await response.json();
 			imgURL = json.message;
 		} catch (e) {
+			logger.error(e);
 			interaction.reply({ content: 'Une erreur est survenue lors de la récupération de l\'image.' });
 		}
 
@@ -48,6 +52,7 @@ module.exports = {
 			.setTimestamp(new Date())
 			.setImage(imgURL);
 
+		logger.info(`${interaction.user.username} à utilisé /nsfw`);
 		interaction.reply({ embeds: [embed] });
 	}
 };

@@ -6,16 +6,19 @@ module.exports = {
 
 		const client = global.CLIENT;
 		const command = client.commands.get(interaction.commandName);
-
 		if (!command) return;
+
+		const logger = global.LOGGER;
 
 		try {
 			await command.execute(interaction);
 		} catch (error) {
+			logger.error(error);
 			console.error(error);
 			try {
 				return interaction.reply({ content: 'Ya un problème avec la commande...' });
 			} catch (error) {
+				logger.error(error);
 				console.error(error);
 			}
 		}

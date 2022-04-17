@@ -10,6 +10,7 @@ async function retreiveURL(message) {
 	const tmp = await fetch(url);
 	const regexID = new RegExp(/\/([0-9]+)/i);
 	let match = null;
+
 	try {
 		// Construction de l'url de l'API
 		match = tmp.url.match(regexID)[1];
@@ -23,6 +24,8 @@ async function retreiveURL(message) {
 module.exports = async (message) => {
 	const url = await retreiveURL(message);
 	if (!url) return;
+
+	const logger = global.LOGGER;
 
 	await message.channel.sendTyping();
 
@@ -47,32 +50,38 @@ module.exports = async (message) => {
 
 	j = j["aweme_detail"];
 
-	const embed = new MessageEmbed()
-		.setColor('#EF2950')
-		.setTitle(`Lien du TikTok`)
-		.setURL(j["share_info"]["share_url"])
-		.setAuthor({
-			name: `${j["author"]["nickname"]} (@${j["author"]["unique_id"]})`,
-			iconURL: j["author"]["avatar_168x168"]["url_list"][0],
-			url: `https://www.tiktok.com/@${j["author"]["unique_id"]}`,
-		})
-		.addField('Vues', j["statistics"]["play_count"].toString(), true)
-		.addField('Likes', j["statistics"]["digg_count"].toString(), true)
-		.addField('Commentaires', j["statistics"]["comment_count"].toString(), true)
-		.setDescription(j["desc"])
-		.setTimestamp(new Date(j["create_time"] * 1000))
-		.setFooter({
-			text: `Envoyé par ${message.member.user.username}`,
-			iconURL: message.member.user.avatarURL({ dynamic: true }),
-		});
+	try {
+		const embed = new MessageEmbed()
+			.setColor('#EF2950')
+			.setTitle(`Lien du TikTok`)
+			.setURL(j["share_info"]["share_url"])
+			.setAuthor({
+				name: `${j["author"]["nickname"]} (@${j["author"]["unique_id"]})`,
+				iconURL: j["author"]["avatar_168x168"]["url_list"][0],
+				url: `https://www.tiktok.com/@${j["author"]["unique_id"]}`,
+			})
+			.addField('Vues', j["statistics"]["play_count"].toString(), true)
+			.addField('Likes', j["statistics"]["digg_count"].toString(), true)
+			.addField('Commentaires', j["statistics"]["comment_count"].toString(), true)
+			.setDescription(j["desc"])
+			.setTimestamp(new Date(j["create_time"] * 1000))
+			.setFooter({
+				text: `Envoyé par ${message.member.user.username}`,
+				iconURL: message.member.user.avatarURL({ dynamic: true }),
+			});
 
-	// Spoiler check
-	const spoilerRegex = new RegExp(/([|]{2})/gi);
-	const spoiler = message.content.match(spoilerRegex);
 
-	if (spoiler) {
-		embed.setDescription("||" + j["description"] + "||");
+		// Spoiler check
+		const spoilerRegex = new RegExp(/([|]{2})/gi);
+		const spoiler = message.content.match(spoilerRegex);
+
+		if (spoiler) {
+			embed.setDescription("||" + j["description"] + "||");
+		}
+
+		await download_video(message, j['video']['play_addr']['url_list'][0], embed, spoiler);
+	} catch (e) {
+		logger.error(e);
+		console.log(e);
 	}
-
-	await download_video(message, j['video']['play_addr']['url_list'][0], embed, spoiler);
 };

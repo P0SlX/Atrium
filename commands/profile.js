@@ -14,6 +14,8 @@ module.exports = {
 		const res = await riot_api(interaction, true);
 		if (res === undefined) return;
 
+		const logger = global.LOGGER;
+
 		const con = mysql.createConnection({
 			host: host,
 			user: user,
@@ -22,7 +24,10 @@ module.exports = {
 		});
 
 		await con.connect(function(err) {
-			if (err) throw err;
+			if (err) {
+				logger.error(err);
+				console.error(err);
+			}
 
 			const req = `SELECT SUM(kills),
                                 SUM(deaths),
@@ -36,7 +41,11 @@ module.exports = {
                          WHERE idsum = '${res["sum"]['puuid']}'`;
 
 			con.query(req, async function(err, result) {
-				if (err) throw err;
+				if (err) {
+					logger.error(err);
+					console.error(err);
+				}
+
 				const kills = result[0]['SUM(kills)'];
 				const deaths = result[0]['SUM(deaths)'];
 				const assists = result[0]['SUM(assists)'];
@@ -71,6 +80,7 @@ module.exports = {
 					.setFooter({ text: `Données basées sur ${nbgames} games` })
 					.setTimestamp(new Date());
 
+				logger.info(`${interaction.user.username} a utilisé /profile | Profile de ${summonerName} envoyé`);
 				await interaction.reply({ embeds: [profile] });
 			});
 		});

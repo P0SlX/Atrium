@@ -7,6 +7,7 @@ module.exports = {
 		.setDescription('Affiche les derniers messages supprimés'),
 	async execute(interaction) {
 		const db = global.DB;
+		const logger = global.LOGGER;
 
 		// Requete SQL
 		db.serialize(() => {
@@ -16,9 +17,12 @@ module.exports = {
                     ORDER BY deleted.date DESC`,
 				async (err, rows) => {
 					if (err) {
+						logger.error(err);
 						console.error(err.message);
 						return;
 					}
+
+					logger.info(`${interaction.user.username} a utilisé la commande /log-deleted`);
 
 					if (rows.length === 0) {
 						return interaction.reply({ content: "Aucun messages supprimés..." });

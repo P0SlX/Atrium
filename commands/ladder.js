@@ -10,15 +10,11 @@ module.exports = {
 		.setDescription('Afficher le classement du serveur sur lol')
 		.addStringOption(option => option.setName('queuetype').setDescription('Type de queue').setRequired(true)
 			.addChoice('SoloQ', 'soloq')
-			.addChoice('Flex', 'flex'),
-		),
+			.addChoice('Flex', 'flex')),
 
 	async execute(interaction) {
 		const con = mysql.createConnection({
-			host: host,
-			user: user,
-			password: password,
-			database: database,
+			host: host, user: user, password: password, database: database,
 		});
 
 		const ranks = ['N/A', 'IRON', 'BRONZE', 'SILVER', 'GOLD', 'PLATINUM', 'DIAMOND', 'MASTER', 'GRANDMASTER', 'CHALLENGER'];

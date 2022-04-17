@@ -3,6 +3,7 @@ module.exports = {
 	once: false,
 	async execute(member) {
 		const db = global.DB;
+		const logger = global.LOGGER;
 
 		const sql = `SELECT roles, nickname
                      FROM ROLES
@@ -10,7 +11,10 @@ module.exports = {
 
 		db.serialize(() => {
 			db.get(sql, [member.id.toString() + member.guild.id.toString()], (err, row) => {
-				if (err) console.error(err.message);
+				if (err) {
+					console.error(err.message);
+					logger.error(err.message);
+				}
 
 				// Nouvel utilisateur
 				if (row == null) return;
@@ -19,6 +23,7 @@ module.exports = {
 				const pseudo = row.nickname;
 
 				member.edit({ nick: pseudo, roles: roles });
+				logger.info(`${member.user.username} a rejoins le serveur, ses rôles ont été récupérés.`);
 			});
 		});
 	},

@@ -8,6 +8,7 @@ module.exports = {
 		if ((oldMember.nickname === newMember.nickname) && (oldMember.roles.cache.size === newMember.roles.cache.size)) return;
 
 		const db = global.DB;
+		const logger = global.LOGGER;
 
 		const getUser = `SELECT id
                          FROM ROLES
@@ -15,7 +16,10 @@ module.exports = {
 
 		db.serialize(() => {
 			db.get(getUser, [oldMember.id.toString() + oldMember.guild.id.toString()], (err, row) => {
-				if (err) console.error(err.message);
+				if (err) {
+					logger.error(err.message);
+					console.error(err.message);
+				}
 
 				let sql;
 
@@ -38,8 +42,11 @@ module.exports = {
 				db.run(sql, [newRoles, newMember.nickname, newMember.id.toString() + newMember.guild.id.toString()],
 					(err) => {
 						if (err) {
+							logger.error(err.message);
 							console.error(err.message);
+							return;
 						}
+						logger.info(`[${newMember.user.username}] a été mis à jour`);
 					});
 			});
 		});

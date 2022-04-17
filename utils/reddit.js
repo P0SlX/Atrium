@@ -5,11 +5,11 @@ const download_video_audio = require("./download_video_audio");
 const extract_url = require("./extract_url");
 
 module.exports = async (message) => {
+	const logger = global.LOGGER;
 	const url = await extract_url(message);
 
 	if (url.includes("/user/")) return;
 
-	// Real shit
 	exec(`timeout 30 yt-dlp -j ${url}`, async (error, stdout, stderr) => {
 		// De plus yt-dlp écrit les warning dans stderr donc ca prend la tête
 		if (error) return;
@@ -19,6 +19,7 @@ module.exports = async (message) => {
 		try {
 			j = JSON.parse(stdout);
 		} catch (e) {
+			logger.error(e);
 			console.error(e);
 			await message.reply({
 				content: "Impossible de parse le JSON...", allowedMentions: { repliedUser: false },

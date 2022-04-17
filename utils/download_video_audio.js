@@ -5,6 +5,8 @@ const { exec } = require("child_process");
 
 
 module.exports = async (message, video, audio, embed, spoiler) => {
+	const logger = global.LOGGER;
+
 	const folderPath = '/tmp/';
 	const video_filename = `${uuidv1()}.mp4`;
 	const audio_filename = `${uuidv1()}.mp4`;
@@ -18,10 +20,11 @@ module.exports = async (message, video, audio, embed, spoiler) => {
 		.then(async () => {
 			download(audio, folderPath, { filename: audio_filename })
 				.then(async () => {
-					exec(`timeout 300 ffmpeg -i ${folderPath}${video_filename} -i ${folderPath}${audio_filename} -c copy ${folderPath}${output_filename}`, async (error, stdout, stderr) => {
+					exec(`timeout 30 ffmpeg -i ${folderPath}${video_filename} -i ${folderPath}${audio_filename} -c copy ${folderPath}${output_filename}`, async (error, stdout, stderr) => {
 						if (error) {
-							console.error(`ffmpeg error: ${error}`);
-							await message.channel.send({ content: "Error while merging audio and video" });
+							logger.error(`Erreur ffmpeg : ${error}`);
+							console.error(`Erreur ffmpeg : ${error}`);
+							await message.channel.send({ content: "Erreur ffmpeg" });
 							return;
 						}
 
@@ -30,7 +33,7 @@ module.exports = async (message, video, audio, embed, spoiler) => {
 							await message.channel.send({ files: [`${folderPath}${output_filename}`] });
 							await message.delete();
 						} catch (e) {
-							await message.channel.send({ content: "Vidéo trop lourde pour être envoyée. Achète Nitro connard" });
+							await message.channel.send({ content: "Vidéo trop lourde pour être envoyée. Achète Nitro..." });
 						}
 
 						await fs.unlink(`${folderPath}${video_filename}`, (err) => {

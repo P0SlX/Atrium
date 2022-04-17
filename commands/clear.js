@@ -13,6 +13,7 @@ module.exports = {
 			});
 		}
 
+
 		const amount = interaction.options.getInteger('nombre');
 
 		if (amount < 1 || amount > 100) {
@@ -21,9 +22,11 @@ module.exports = {
 
 		await interaction.channel.bulkDelete(amount, true).catch(error => {
 			console.error(error);
+			global.LOGGER.info(`${interaction.user.username} a essayé de clear ${amount} messages dans ${interaction.channel.name} mais il y a eu un problème.`);
 			interaction.reply({ content: 'Echec de la suppression de messages...', ephemeral: true });
 		});
 
+		global.LOGGER.info(`${interaction.user.username} a utilisé la commande clear et a supprimé ${amount} messages`);
 		return interaction.reply({ content: `\`${amount}\` messages ont été supprimés.`, ephemeral: true });
 	},
 };

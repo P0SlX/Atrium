@@ -17,12 +17,15 @@ module.exports = {
 		let ip = "1.1";
 		let c = 5;
 
+		const logger = global.LOGGER;
+
 		if (interaction.options.getString('ip')) ip = interaction.options.getString('ip');
 		if (interaction.options.getInteger('count')) c = interaction.options.getInteger('count');
 
 		await interaction.reply(`Ping de \`${ip}\` en cours...`);
 		exec(`timeout 30 ping ${ip} -i 0.2 -c ${c} | grep -B 1 avg`, async (error, stdout, stderr) => {
 			if (error || stderr) {
+				logger.error(`${error} ${stderr}`);
 				await interaction.editReply({ content: `Impossible de ping ${ip}` });
 				return;
 			}
@@ -32,6 +35,8 @@ module.exports = {
 			const minPing = pings[0];
 			const avgPing = pings[1];
 			const maxPing = pings[2];
+
+			logger.info(`Ping de ${ip} : ${packetLoss}% de perte, ${minPing}ms min, ${avgPing}ms moyen, ${maxPing}ms max`);
 			return interaction.editReply(`IP : \`${ip}\`\ncount : \`${c}\`\nmin : \`${minPing}\`ms / avg : \`${avgPing}\`ms / max : \`${maxPing}\`ms\nPacket loss : \`${packetLoss}\``);
 		});
 	},

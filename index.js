@@ -3,6 +3,8 @@ const { Client, Collection, Intents } = require('discord.js');
 const { token } = require('./config.json');
 const sqlite3 = require('sqlite3').verbose();
 const cron = require('cron');
+const pino = require("pino");
+const logger = pino(pino.destination({ dest: '/tmp/log.json', sync: false }))
 
 const client = new Client({
 	intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MEMBERS],
@@ -41,16 +43,8 @@ const db = new sqlite3.Database('atrium.db', sqlite3.OPEN_READWRITE, (err) => {
 
 global.DB = db;
 global.CLIENT = client;
+global.LOGGER = logger;
 
 // db.run('CREATE TABLE deleted(id integer primary key autoincrement, message text, date datetime)');
 
-
-client.login(token).then(async () => {
-	const cronJob = cron.job('0,30 17 * * 1-5', async () => {
-		const channel = await client.channels.cache.get('667053408636633088');
-		await channel.send({ content: "Finito la journée", files: ['./resources/travail_termine.mp4'] });
-	});
-	client.user.setActivity("des canettes", { type: "STREAMING", url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" });
-
-	cronJob.start();
-});
+client.login(token);

@@ -7,6 +7,7 @@ module.exports = async (message) => {
 			content: "Impossible de récup l'URL de la vidéo...", allowedMentions: { repliedUser: false },
 		});
 		console.error('Erreur: URL impossible à recup. Message.content : ' + message.content);
+		global.LOGGER.error('Erreur: URL impossible à recup. Message.content : ' + message.content);
 		return;
 	}
 	return url;

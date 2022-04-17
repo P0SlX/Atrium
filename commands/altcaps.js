@@ -3,8 +3,8 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('altcaps')
-		.setDescription('fAiT uN mEsSaGe cOmMe Ca')
-		.addStringOption(option => option.setName('message').setDescription("Jsais pas quoi mettre comme description pd de merde").setRequired(true)),
+		.setDescription('cRaFt uN mEsSaGe cOmMe Ca')
+		.addStringOption(option => option.setName('message').setDescription("Jsais pas quoi mettre comme description").setRequired(true)),
 	async execute(interaction) {
 		const input_msg = interaction.options.getString('message');
 
