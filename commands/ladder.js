@@ -46,6 +46,17 @@ module.exports = {
                         res.pop();
                     }
 
+                    let avgsoloq = 0;
+
+                    for (let i = 0; i < Object.keys(res).length; i++) {
+                        avgsoloq += res[i]['classementsoloq'];
+                    }
+
+                    avgsoloq /= Object.keys(res).length;
+                    const avgranksoloq = ranks[parseInt(avgsoloq, 10)];
+                    const avgromainsoloq = romain[parseInt((avgsoloq - parseInt(avgsoloq, 10)) * 4, 10)];
+                    const avglpsoloq = parseInt(((avgsoloq - parseInt(avgsoloq, 10) - parseInt((avgsoloq - parseInt(avgsoloq, 10)) * 4, 10) / 4) / 25) * 10000, 10);
+
                     for (let i = 0; i < Object.keys(res).length; i++) {
                         let out = "";
                         for (let j = 0; j < Object.keys(res[i]['ranksoloq']).length; j++) {
@@ -62,7 +73,7 @@ module.exports = {
                     const ladder = new MessageEmbed()
                         .setColor("#0099ff")
                         .setTitle("Classement en SoloQ du serveur")
-                        .setFooter({ text: "N'affiche pas les non classés" })
+                        .setFooter({ text: "Rang moyen en soloQ : " + avgranksoloq + " " + avgromainsoloq + ", " + avglpsoloq + " LP" })
                         .setTimestamp(new Date());
 
                     for (let i = 0; i < Object.keys(res).length; i++) {
@@ -98,6 +109,17 @@ module.exports = {
                         res.pop();
                     }
 
+                    let avgflex = 0;
+
+                    for (let i = 0; i < Object.keys(res).length; i++) {
+                        avgflex += res[i]['classementflex'];
+                    }
+
+                    avgflex /= Object.keys(res).length;
+                    const avgrankflex = ranks[parseInt(avgflex, 10)];
+                    const avgromainflex = romain[parseInt((avgflex - parseInt(avgflex, 10)) * 4, 10)];
+                    const avglpflex = parseInt(((avgflex - parseInt(avgflex, 10) - parseInt((avgflex - parseInt(avgflex, 10)) * 4, 10) / 4) / 25) * 10000, 10);
+
                     for (let i = 0; i < Object.keys(res).length; i++) {
                         let out = "";
                         for (let j = 0; j < Object.keys(res[i]['rankflex']).length; j++) {
@@ -114,7 +136,7 @@ module.exports = {
                     const ladder = new MessageEmbed()
                         .setColor("#0099ff")
                         .setTitle("Classement en Flex du serveur")
-                        .setFooter({ text: "N'affiche pas les non classés" })
+                        .setFooter({ text: "Rang moyen en flex : " + avgrankflex + " " + avgromainflex + ", " + avglpflex + " LP" })
                         .setTimestamp(new Date());
 
                     for (let i = 0; i < Object.keys(res).length; i++) {
