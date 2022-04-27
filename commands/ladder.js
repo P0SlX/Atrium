@@ -54,7 +54,7 @@ module.exports = {
 
                     avgsoloq /= Object.keys(res).length;
                     const avgranksoloq = ranks[parseInt(avgsoloq, 10)];
-                    const avgromainsoloq = romain[parseInt((avgsoloq - parseInt(avgsoloq, 10)) * 4, 10)];
+                    const avgromainsoloq = romain[parseInt((avgsoloq - parseInt(avgsoloq, 10)) * 4, 10) + 1];
                     const avglpsoloq = parseInt(((avgsoloq - parseInt(avgsoloq, 10) - parseInt((avgsoloq - parseInt(avgsoloq, 10)) * 4, 10) / 4) / 25) * 10000, 10);
 
                     for (let i = 0; i < Object.keys(res).length; i++) {
@@ -117,7 +117,7 @@ module.exports = {
 
                     avgflex /= Object.keys(res).length;
                     const avgrankflex = ranks[parseInt(avgflex, 10)];
-                    const avgromainflex = romain[parseInt((avgflex - parseInt(avgflex, 10)) * 4, 10)];
+                    const avgromainflex = romain[parseInt((avgflex - parseInt(avgflex, 10)) * 4, 10) + 1];
                     const avglpflex = parseInt(((avgflex - parseInt(avgflex, 10) - parseInt((avgflex - parseInt(avgflex, 10)) * 4, 10) / 4) / 25) * 10000, 10);
 
                     for (let i = 0; i < Object.keys(res).length; i++) {
