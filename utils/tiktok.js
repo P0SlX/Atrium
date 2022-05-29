@@ -82,6 +82,7 @@ module.exports = async (message) => {
 		// Remove all hashtags from description
 		const hashtagsRegex = new RegExp(/\W(#[a-zA-Z]+\b)/gi)
 		const hashtagsToDelete = j["desc"].match(hashtagsRegex);
+
 		if (hashtagsToDelete !== null) {
 			hashtagsToDelete.forEach((item) => {
 				embed.setDescription(embed.description.replace(item, ""));

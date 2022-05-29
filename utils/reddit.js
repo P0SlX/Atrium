@@ -72,11 +72,14 @@ module.exports = async (message) => {
 		}
 
 		// Si la vidéo n'a pas de son alors il faut la télécharger et merge avec ffmpeg
-		if (urls.length > 1) {
+		if (urls.length > 1)
 			await download_video_audio(message, urls[0], urls[1], embed, spoiler);
-		}
         else {
-			await download_video(message, j['url'], embed, spoiler);
+			if (urls[0].includes("gif")) {
+				await message.channel.send({ embeds: [embed] });
+				await message.channel.send({ content: urls[0]});
+			} else
+				await download_video(message, j['url'], embed, spoiler);
 		}
 	});
 }
