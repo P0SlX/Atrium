@@ -76,7 +76,16 @@ module.exports = async (message) => {
 		const spoiler = message.content.match(spoilerRegex);
 
 		if (spoiler) {
-			embed.setDescription("||" + j["description"] + "||");
+			embed.setDescription("||" + j["desc"] + "||");
+		}
+
+		// Remove all hashtags from description
+		const hashtagsRegex = new RegExp(/\W(#[a-zA-Z]+\b)/gi)
+		const hashtagsToDelete = j["desc"].match(hashtagsRegex);
+		if (hashtagsToDelete !== null) {
+			hashtagsToDelete.forEach((item) => {
+				embed.setDescription(embed.description.replace(item, ""));
+			});
 		}
 
 		await download_video(message, j['video']['play_addr']['url_list'][0], embed, spoiler);

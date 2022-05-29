@@ -46,15 +46,15 @@ module.exports = async (message) => {
 			const regexURL = new RegExp(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/gi);
 			const regexHashtag = new RegExp(/\B(\#[a-zA-Z]+\b)/gi);
 			const urlsToDelete = j["description"].match(regexURL);
-			const hastagsToDelete = j["description"].match(regexHashtag);
+			const hashtagsToDelete = j["description"].match(regexHashtag);
 			if (urlsToDelete !== null) {
 				urlsToDelete.forEach((item) => {
 					j["description"] = j["description"].replace(item, "");
 				});
 			}
 
-			if (hastagsToDelete !== null) {
-				hastagsToDelete.forEach((item) => {
+			if (hashtagsToDelete !== null) {
+				hashtagsToDelete.forEach((item) => {
 					j["description"] = j["description"].replace(item, "");
 				});
 			}
