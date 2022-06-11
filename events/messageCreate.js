@@ -10,7 +10,8 @@ module.exports = {
 	name: 'messageCreate',
 	once: false,
 	async execute(message) {
-		if (message.author.bot) return;
+		// Si c'est un message du bot et que c'est pas dans le chan #tempo
+		if (message.author.bot && message.channel.id !== 841405624985190430) return;
 
 		const random = Math.floor(Math.random() * 1000) + 1;
 
