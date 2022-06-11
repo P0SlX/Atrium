@@ -80,7 +80,7 @@ module.exports = async (message) => {
 		}
 
 		// Remove all hashtags from description
-		const hashtagsRegex = new RegExp(/\W(#[a-zA-Z]+\b)/gi)
+		const hashtagsRegex = new RegExp(/\W?(#[a-zA-Z]+\b)/gi)
 		const hashtagsToDelete = j["desc"].match(hashtagsRegex);
 
 		if (hashtagsToDelete !== null) {
