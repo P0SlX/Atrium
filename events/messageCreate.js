@@ -11,7 +11,7 @@ module.exports = {
 	once: false,
 	async execute(message) {
 		// Si c'est un message du bot et que c'est pas dans le chan #tempo
-		if (message.author.bot && message.channel.id !== 841405624985190430) return;
+		if (message.author.bot && message.channel.id !== "841405624985190430") return;
 
 		const random = Math.floor(Math.random() * 1000) + 1;
 
@@ -35,7 +35,7 @@ module.exports = {
 		else if (message.content === "admin") {
 			await admin(message);
 		}
-		else if (random === 50 && message.author.id !== "200227803189215232" && message.channel.id !== "878333881063993364") {
+		else if (random === 50 && (message.author.id !== "200227803189215232" && message.channel.id !== "878333881063993364")) {
 			message.reply({ content: "https://tenor.com/view/who-asked-nobody-asked-nobody-cares-damn-thats-crazy-gif-20130694" });
 		}
 	},
