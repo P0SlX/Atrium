@@ -16,9 +16,8 @@ module.exports = {
 		// Si c'est un message du bot et que c'est pas dans le chan #tempo
 		if (message.author.bot && message.channel.id !== "841405624985190430") return;
 
-		// const random = Math.floor(Math.random() * 1000) + 1;
+		const random = Math.floor(Math.random() * 1000) + 1;
 		// TODO: Sanitize message content
-		const random = 50
 
 		if (message.content.includes("twitter.com")) {
 			await twitter(message);
