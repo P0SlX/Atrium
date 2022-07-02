@@ -6,8 +6,8 @@ After=network.target
 Type=simple
 Restart=always
 RestartSec=1
-User=ubuntu
-ExecStart=/home/ubuntu/start_atrium.sh
+User=p0slx
+ExecStart=/home/p0slx/Atrium/start_atrium.sh
 
 [Install]
 WantedBy=multi-user.target
