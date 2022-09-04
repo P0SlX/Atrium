@@ -16,7 +16,7 @@ module.exports = {
 		// Si c'est un message du bot et que c'est pas dans le chan #tempo
 		if (message.author.bot && message.channel.id !== "841405624985190430") return;
 
-		const random = Math.floor(Math.random() * 1000) + 1;
+		const random = Math.floor(Math.random() * 500) + 1;
 		// TODO: Sanitize message content
 
 		if (message.content.includes("twitter.com")) {
@@ -37,7 +37,7 @@ module.exports = {
 		else if (message.content === "admin") {
 			await admin(message);
 		}
-		else if (random === 50 && !(message.author.id === "200227803189215232" && message.channel.id === "853019023544549376")) {
+		else if (random === 1 && !(message.author.id === "200227803189215232" && message.channel.id === "853019023544549376")) {
 			message.reply({ content: who_asked[Math.floor(Math.random() * who_asked.length)] });
 		}
 	},
