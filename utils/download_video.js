@@ -13,25 +13,22 @@ module.exports = async (message, url, embed, spoiler) => {
 		filename = `SPOILER_${uuidv1()}.mp4`;
 	}
 
-	download(url, folderPath, { filename: filename })
-		.then(async () => {
-			await message.channel.send({ embeds: [embed] });
-			try {
-				await message.channel.send({ files: [`${folderPath}${filename}`] });
-			} catch (e) {
-				await message.channel.send({ content: url });
-			}
-			try {
-				await message.delete();
-			} catch (e) {
-				logger.error(e);
-				console.error(e);
-			}
-			fs.unlink(`${folderPath}${filename}`, (err) => {
-				if (err) {
-					logger.error(err);
-					console.error(err);
-				}
-			});
-		})
-}
+	// Download video in tmp folder
+	await download(url, folderPath, { filename: filename });
+
+	// Sending embed first because discord still don't support video in embed...
+	await message.channel.send({ embeds: [embed] });
+
+	// Try sending video, if it fails (file too large), send the url
+	await message.channel.send({ files: [`${folderPath}${filename}`] })
+		.catch(async () => await message.channel.send({ content: url }));
+
+	// Try deleting message if not already deleted by someone else
+	await message.delete().catch((err) => {
+		logger.error(err);
+		console.error(err);
+	});
+
+	// Delete video from tmp folder
+	fs.unlinkSync(`${folderPath}${filename}`);
+};

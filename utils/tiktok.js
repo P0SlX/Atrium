@@ -1,9 +1,9 @@
-const { MessageEmbed } = require("discord.js");
+const { EmbedBuilder } = require("discord.js");
 const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 const download_video = require("./download_video");
 const extract_url = require("./extract_url");
 
-async function retreiveURL(message) {
+async function retrieveURL(message) {
 	const url = await extract_url(message);
 
 	// Recupère l'id de la vidéo en suitant les redirections
@@ -22,7 +22,7 @@ async function retreiveURL(message) {
 }
 
 module.exports = async (message) => {
-	const url = await retreiveURL(message);
+	const url = await retrieveURL(message);
 	if (!url) return;
 
 	const logger = global.LOGGER;
@@ -31,13 +31,13 @@ module.exports = async (message) => {
 
 	// Fetch json
 	let cpt = 1;
-	let j = "";
+	let data = "";
 	while (cpt < 5) {
 		await fetch(url)
-			.then(async data => {
+			.then(async res => {
 				// Obligé de try catch car des fois l'api renvoie un mauvais JSON
 				try {
-					j = await data.json();
+					data = await res.json();
 					cpt = 10;
 				} catch (e) {
 				}
@@ -48,23 +48,25 @@ module.exports = async (message) => {
 		await message.reply({ content: "<@200227803189215232> Il est l'heure de changer de serveur !" });
 	}
 
-	j = j["aweme_detail"];
+	data = data["aweme_detail"];
 
 	try {
-		const embed = new MessageEmbed()
+		const embed = new EmbedBuilder()
 			.setColor('#EF2950')
 			.setTitle(`Lien du TikTok`)
-			.setURL(j["share_info"]["share_url"])
+			.setURL(data["share_info"]["share_url"])
 			.setAuthor({
-				name: `${j["author"]["nickname"]} (@${j["author"]["unique_id"]})`,
-				iconURL: j["author"]["avatar_168x168"]["url_list"][0],
-				url: `https://www.tiktok.com/@${j["author"]["unique_id"]}`,
+				name: `${data["author"]["nickname"]} (@${data["author"]["unique_id"]})`,
+				iconURL: data["author"]["avatar_168x168"]["url_list"][0],
+				url: `https://www.tiktok.com/@${data["author"]["unique_id"]}`,
 			})
-			.addField('Vues', j["statistics"]["play_count"].toString(), true)
-			.addField('Likes', j["statistics"]["digg_count"].toString(), true)
-			.addField('Commentaires', j["statistics"]["comment_count"].toString(), true)
-			.setDescription(j["desc"])
-			.setTimestamp(new Date(j["create_time"] * 1000))
+			.addFields(
+				{ name: "Vues", value: data["statistics"]["play_count"].toString(), inline: true },
+				{ name: "Likes", value: data["statistics"]["digg_count"].toString(), inline: true },
+				{ name: "Commentaires", value: data["statistics"]["comment_count"].toString(), inline: true },
+			)
+			.setDescription(data["desc"])
+			.setTimestamp(new Date(data["create_time"] * 1000))
 			.setFooter({
 				text: `Envoyé par ${message.member.user.username}`,
 				iconURL: message.member.user.avatarURL({ dynamic: true }),
@@ -76,12 +78,12 @@ module.exports = async (message) => {
 		const spoiler = message.content.match(spoilerRegex);
 
 		if (spoiler) {
-			embed.setDescription("||" + j["desc"] + "||");
+			embed.setDescription("||" + data["desc"] + "||");
 		}
 
 		// Remove all hashtags from description
 		const hashtagsRegex = new RegExp(/\W?(#[a-zA-Z]+\b)/gi)
-		const hashtagsToDelete = j["desc"].match(hashtagsRegex);
+		const hashtagsToDelete = data["desc"].match(hashtagsRegex);
 
 		if (hashtagsToDelete !== null) {
 			hashtagsToDelete.forEach((item) => {
@@ -89,7 +91,7 @@ module.exports = async (message) => {
 			});
 		}
 
-		await download_video(message, j['video']['play_addr']['url_list'][0], embed, spoiler);
+		await download_video(message, data['video']['play_addr']['url_list'][0], embed, spoiler);
 	} catch (e) {
 		logger.error(e);
 		console.log(e);

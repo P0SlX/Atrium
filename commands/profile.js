@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const mysql = require('mysql');
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const { host, user, password, database } = require('../config.json');
 const riot_api = require('../utils/riot_api')
 
@@ -63,20 +63,22 @@ module.exports = {
 					}
 				}
 
-				const profile = new MessageEmbed()
+				const profile = new EmbedBuilder()
 					.setColor("#0099ff")
 					.setTitle(summonerName)
 					.setURL(`https://euw.op.gg/summoners/euw/${res["sum"]["summonerName"]}`)
 					.setThumbnail(`http://ddragon.leagueoflegends.com/cdn/${res["version"]}/img/profileicon/${res["sum"]["profileIconId"]}.png`)
 					.setDescription(`Stats de ${summonerName}`)
-					.addField('KDA', ((kills + assists) / deaths).toFixed(2), false)
-					.addField('Soloq rank', ranksoloq, false)
-					.addField('Kills', kills.toString(), true)
-					.addField('Deaths', deaths.toString(), true)
-					.addField('Assists', assists.toString(), true)
-					.addField('Minions tués', totalcs.toString(), true)
-					.addField('Gold gagnés', golde.toString(), true)
-					.addField('Kills participation', kp.toFixed(2), true)
+					.addFields(
+						{ name: "KDA", value: ((kills + assists) / deaths).toFixed(2), inline: false },
+						{ name: "Soloq rank", value: ranksoloq, inline: false },
+						{ name: "Kills", value: kills.toString(), inline: true },
+						{ name: "Deaths", value: deaths.toString(), inline: true },
+						{ name: "Assists", value: assists.toString(), inline: true },
+						{ name: "Minions tués", value: totalcs.toString(), inline: true },
+						{ name: "Gold gagnés", value: golde.toString(), inline: true },
+						{ name: "Kills participation", value: kp.toFixed(2), inline: true },
+					)
 					.setFooter({ text: `Données basées sur ${nbgames} games` })
 					.setTimestamp(new Date());
 

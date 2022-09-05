@@ -16,42 +16,34 @@ module.exports = async (message, video, audio, embed, spoiler) => {
 		output_filename = `SPOILER_${uuidv1()}.mp4`;
 	}
 
-	download(video, folderPath, { filename: video_filename })
-		.then(async () => {
-			download(audio, folderPath, { filename: audio_filename })
-				.then(async () => {
-					exec(`timeout 30 ffmpeg -i ${folderPath}${video_filename} -i ${folderPath}${audio_filename} -c copy ${folderPath}${output_filename}`, async (error, stdout, stderr) => {
-						if (error) {
-							logger.error(`Erreur ffmpeg : ${error}`);
-							console.error(`Erreur ffmpeg : ${error}`);
-							await message.channel.send({ content: "Erreur ffmpeg" });
-							return;
-						}
+	await Promise.all([
+		download(video, folderPath, { filename: video_filename }),
+		download(audio, folderPath, { filename: audio_filename })
+	]);
 
-						try {
-							await message.channel.send({ embeds: [embed] });
-							await message.channel.send({ files: [`${folderPath}${output_filename}`] });
-							await message.delete();
-						} catch (e) {
-							await message.channel.send({ content: "Vidéo trop lourde pour être envoyée. Achète Nitro..." });
-						}
+	const { error } = await exec(`timeout 30 ffmpeg -i ${folderPath}${video_filename} -i ${folderPath}${audio_filename} -c copy ${folderPath}${output_filename}`);
 
-						await fs.unlink(`${folderPath}${video_filename}`, (err) => {
-							if (err) {
-								console.log(err);
-							}
-						});
-						await fs.unlink(`${folderPath}${audio_filename}`, (err) => {
-							if (err) {
-								console.log(err);
-							}
-						});
-						await fs.unlink(`${folderPath}${output_filename}`, (err) => {
-							if (err) {
-								console.log(err);
-							}
-						});
-					});
-				});
-		});
+	if (error) {
+		logger.error(`Erreur ffmpeg : ${error}`);
+		console.error(`Erreur ffmpeg : ${error}`);
+		await message.channel.send({ content: `Erreur ffmpeg: ${error}` });
+		return;
+	}
+
+	// Sending embed
+	await message.channel.send({ embeds: [embed] });
+
+	// Try sending file
+	await message.channel.send({ files: [`${folderPath}${output_filename}`] })
+		.catch(async () => await message.channel.send({ content: "Vidéo trop lourde pour être envoyée. Achète Nitro..." }));
+
+	// Try deleting message if not already deleted by someone else
+	await message.delete().catch((err) => {
+		logger.error(err);
+		console.error(err);
+	});
+
+	fs.unlinkSync(`${folderPath}${video_filename}`);
+	fs.unlinkSync(`${folderPath}${audio_filename}`);
+	fs.unlinkSync(`${folderPath}${output_filename}`);
 }

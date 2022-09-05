@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { MessageEmbed } = require("discord.js");
+const { EmbedBuilder } = require("discord.js");
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -28,7 +28,7 @@ module.exports = {
 						return interaction.reply({ content: "Aucun messages supprimés..." });
 					}
 
-					const embed = new MessageEmbed()
+					const embed = new EmbedBuilder()
 						.setColor('#E47A7A')
 						.setTitle("Messages supprimés")
 						.setURL("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
@@ -41,14 +41,18 @@ module.exports = {
 						const dateString = `${date.getHours()}:${date.getMinutes()} ${date.getDate()}/${date.getMonth() + 1}`;
 
 						if (i > 0) {
-							embed.addField("\u200b", user, true);
-							embed.addField("\u200b", rows[i].message.substring(0, 1024), true);
-							embed.addField("\u200b", dateString, true);
+							embed.addFields(
+								{ name: '\u200B', value: user, inline: true },
+								{ name: '\u200B', value: rows[i].message.substring(0, 1024), inline: true },
+								{ name: '\u200B', value: dateString, inline: true },
+							);
 						}
 						else {
-							embed.addField("User (#channel)", user, true);
-							embed.addField("Message", rows[i].message.substring(0, 1024), true);
-							embed.addField("Date", dateString, true);
+							embed.addFields(
+								{ name: "User (#channel)", value: user, inline: true },
+								{ name: "Message", value: rows[i].message.substring(0, 1024), inline: true },
+								{ name: "Date", value: dateString, inline: true },
+							);
 						}
 					}
 

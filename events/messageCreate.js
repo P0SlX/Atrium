@@ -5,9 +5,6 @@ const webm = require('../utils/webm');
 const reddit = require('../utils/reddit');
 const tempo = require('../utils/tempo');
 const { who_asked } = require('../resources/who_asked.json');
-const { rapti } = require("../resources/rapti.json");
-
-
 
 module.exports = {
 	name: 'messageCreate',

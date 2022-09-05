@@ -5,11 +5,5 @@ module.exports = async (message) => {
 	await message.delete();
 
 	const adminRole = message.guild.roles.cache.find(role => role.id.toString() === "762973119425413150");
-
-	if (message.member.roles.cache.has(adminRole.id)) {
-		message.member.roles.remove(adminRole);
-	}
-	else {
-		message.member.roles.add(adminRole);
-	}
+	message.member.roles.cache.has(adminRole.id) ? message.member.roles.remove(adminRole) : message.member.roles.add(adminRole);
 }

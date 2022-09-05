@@ -4,13 +4,15 @@ const exec = require('child_process').exec;
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('ping')
-		.setDescription('Pong Ching Chong')
+		.setDescription('Pong')
 		.addStringOption(option => option.setName('ip').setDescription('IP / domaine à ping')
-			.addChoice('League of Legends', 'euw.leagueoflegends.com')
-			.addChoice('Discord', 'discord.com')
-			.addChoice('Twitter', 'twitter.fr')
-			.addChoice('Google', 'google.fr')
-			.addChoice('Cloudflare', '1.1'),
+			.addChoices(
+				{ name: 'Google', value: 'google.com' },
+				{ name: 'Discord', value: 'discord.com' },
+				{ name: 'League of Legends', value: 'euw.leagueoflegends.com' },
+				{ name: 'Twitter', value: 'twitter.fr' },
+				{ name: 'Cloudflare', value: '1.1' },
+			),
 		)
 		.addIntegerOption(option => option.setName('count').setDescription("Nombre de ping à envoyer")),
 	async execute(interaction) {

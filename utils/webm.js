@@ -15,7 +15,7 @@ module.exports = async (message) => {
 		await download(url, folderPath, { filename: filename + ".webm" })
 			.then(async () => {
 
-				// Convertion du fichier en MP4
+				// Conversion du fichier en MP4
 				exec(`timeout 300 ffmpeg -i ${folderPath}${filename}.webm -crf 28 ${folderPath}${filename}.mp4`, async (error, stdout, stderr) => {
 					if (error) return message.channel.send({ content: "Impossible de convertir la vidéo..." });
 
