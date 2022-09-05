@@ -21,10 +21,9 @@ Log les messages supprimés pour éviter les ghosts ping.
 Converti les fichiers `.webm` en `.mp4` pour lire les fichiers sur téléphone  
 
 ### Liste des commandes
-- `/altcaps` ÉcRis eL mEsSaGe CoMmE çA
+- `/altcaps` ÉcRiS lE mEsSaGe CoMmE çA
 - `/clear` Clear le nombre de message en paramètre (1-100 messages de 14j max)
 - `/log-deleted` Affiche les 8 derniers messages supprimés
-- `/nsfw` Bon...
 - `/ping` Envoyer des packets ICMP Echo Request à une adresse IP / nom de domaine
 - `/rapti` Ressors au hasard une phrase contenant le #rapti
 - `/refresh` Refresh les roles/pseudo dans la base
