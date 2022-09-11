@@ -2,7 +2,6 @@ const fs = require('fs');
 const { Client, Collection, Intents } = require('discord.js');
 const { token } = require('./config.json');
 const sqlite3 = require('sqlite3').verbose();
-const cron = require('cron');
 const pino = require("pino");
 const logger = pino(pino.destination({ dest: '/tmp/log.json', sync: false }));
 const { GatewayIntentBits } = require('discord.js');
