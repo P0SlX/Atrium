@@ -64,30 +64,33 @@ module.exports = async (message) => {
                 { name: "Likes", value: data["statistics"]["digg_count"].toString(), inline: true },
                 { name: "Commentaires", value: data["statistics"]["comment_count"].toString(), inline: true },
             )
-            .setDescription(data["desc"])
             .setTimestamp(new Date(data["create_time"] * 1000))
             .setFooter({
                 text: `Envoyé par ${message.member.user.username}`,
                 iconURL: message.member.user.avatarURL({ dynamic: true }),
             });
 
-
+        let description = data["desc"];
         // Spoiler check
         const spoilerRegex = new RegExp(/([|]{2})/gi);
         const spoiler = message.content.match(spoilerRegex);
 
         if (spoiler) {
-            embed.setDescription("||" + data["desc"] + "||");
+            description = "||" + description + "||";
         }
 
         // Remove all hashtags from description
-        const hashtagsRegex = new RegExp(/\W?(#[a-zA-Z]+\b)/gi);
+        const hashtagsRegex = new RegExp(/(#\w+)/gi);
         const hashtagsToDelete = data["desc"].match(hashtagsRegex);
 
         if (hashtagsToDelete !== null) {
             hashtagsToDelete.forEach((item) => {
-                embed.setDescription(embed.description.replace(item, ""));
+                description = description.replace(item, "");
             });
+        }
+
+        if (description.length > 0) {
+            embed.setDescription(description);
         }
 
         await download_video(message, data['video']['play_addr']['url_list'][0], embed, spoiler);

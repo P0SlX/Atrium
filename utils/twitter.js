@@ -23,8 +23,8 @@ module.exports = async (message) => {
             data["description"] = data["description"].replace("  ", "\n\n");
 
             // Retire les liens et les hashtags
-            const regexURL = new RegExp(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/gi);
-            const regexHashtag = new RegExp(/\B(\#[a-zA-Z]+\b)/gi);
+            const regexURL = new RegExp(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)/gi);
+            const regexHashtag = new RegExp(/\B(#[a-zA-Z]+\b)/gi);
             const urlsToDelete = data["description"].match(regexURL);
             const hashtagsToDelete = data["description"].match(regexHashtag);
             if (urlsToDelete !== null) {
@@ -73,11 +73,5 @@ module.exports = async (message) => {
             logger.error(e);
             console.log(e);
         }
-    });
-
-    ytdlp.stderr.on('data', async (data) => {
-        logger.error(`Erreur yt-dlp : ${data}`);
-        console.error(`Erreur yt-dlp : ${data}`);
-        message.channel.send({ content: `Erreur yt-dlp: ${data}` });
     });
 };
