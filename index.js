@@ -1,7 +1,8 @@
 const fs = require('fs');
 const { Client, Collection, Intents } = require('discord.js');
-const { token } = require('./config.json');
+const { token, host, user, password, database } = require('./config.json');
 const sqlite3 = require('sqlite3').verbose();
+const mysql = require('mysql');
 const pino = require("pino");
 const logger = pino(pino.destination({ dest: '/tmp/log.json', sync: false }));
 const { GatewayIntentBits } = require('discord.js');
@@ -47,7 +48,24 @@ const db = new sqlite3.Database('atrium.db', sqlite3.OPEN_READWRITE, (err) => {
     console.log('Connecté à la base de données.');
 });
 
+const con = mysql.createConnection({
+    host: host,
+    user: user,
+    password: password,
+    database: database,
+});
+
+con.connect(function(err) {
+    if (err) {
+        logger.error(err);
+        console.error(err);
+        return;
+    }
+    console.log("Connecté à la base de données MySQL.")
+});
+
 global.DB = db;
+global.con = con;
 global.CLIENT = client;
 global.LOGGER = logger;
 
