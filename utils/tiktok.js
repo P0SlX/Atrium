@@ -1,7 +1,7 @@
 const { EmbedBuilder } = require("discord.js");
 const download_video = require("./download_video");
 const extract_url = require("./extract_url");
-const { request } = require('undici');
+const axios = require('axios');
 
 async function retrieveURL(message) {
     const url = await extract_url(message);
@@ -34,8 +34,11 @@ module.exports = async (message) => {
     let data = "";
     while (cpt < 5) {
         try {
-            const { body } = await request(url);
-            data = await body.json();
+            data = await axios.get(url, {
+                headers: {
+                    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36",
+                },
+            }).then((res) => res.data["aweme_detail"]);
             cpt = 10;
         } catch (e) {
             logger.error(e);
@@ -46,8 +49,6 @@ module.exports = async (message) => {
     if (cpt !== 10) {
         await message.reply({ content: "<@200227803189215232> Il est l'heure de changer de serveur !" });
     }
-
-    data = data["aweme_detail"];
 
     try {
         const embed = new EmbedBuilder()
