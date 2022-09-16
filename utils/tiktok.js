@@ -3,98 +3,84 @@ const download_video = require("./download_video");
 const extract_url = require("./extract_url");
 const axios = require('axios');
 
-async function retrieveURL(message) {
-    const url = await extract_url(message);
-
-    // Recupère l'id de la vidéo en suitant les redirections
-    const tmp = await fetch(url);
-    const regexID = new RegExp(/\/([0-9]+)/i);
-    let match = null;
-
-    try {
-        // Construction de l'url de l'API
-        match = tmp.url.match(regexID)[1];
-        return `https://api2.musical.ly/aweme/v1/aweme/detail/?aweme_id=${match}`;
-    } catch (e) {
-        // C'est certainement un profil ou un lien sans vidéo car il ne trouve pas d'id
-        return null;
-    }
-}
-
 module.exports = async (message) => {
-    const url = await retrieveURL(message);
+    const url = await extract_url(message);
     if (!url) return;
 
     const logger = global.LOGGER;
 
     await message.channel.sendTyping();
 
-    // Fetch json
-    let cpt = 1;
-    let data = "";
-    while (cpt < 5) {
-        try {
-            data = await axios.get(url, {
-                headers: {
-                    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36",
-                },
-            }).then((res) => res.data["aweme_detail"]);
-            cpt = 10;
-        } catch (e) {
-            logger.error(e);
-            cpt++;
-        }
-    }
+    // Fetch webpage
+    const data = await axios.get(url, {
+        headers: {
+            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36",
+        },
+    });
 
-    if (cpt !== 10) {
-        await message.reply({ content: "<@200227803189215232> Il est l'heure de changer de serveur !" });
+    // Extract JSON from webpage
+    const regex = new RegExp(/<script id="SIGI_STATE" type="application\/json">(.*)<\/script><script id="SIGI_RETRY" type="application\/json">/i);
+    const match = data.data.match(regex)[1];
+    const json = JSON.parse(match);
+
+    // Video infos
+    const videoId = json["ItemList"]["video"]["list"][0];
+    const videoUrl = encodeURI(json["ItemModule"][videoId]["video"]["downloadAddr"]);
+    const filesize = json["ItemModule"][videoId]["video"]["bitrateInfo"][0]["DataSize"]; // in bytes
+    const createdAt = new Date(json["ItemModule"][videoId]["createTime"] * 1000);
+
+    // Post infos
+    const likes = json["ItemModule"][videoId]["stats"]["diggCount"];
+    const comments = json["ItemModule"][videoId]["stats"]["commentCount"];
+    const views = json["ItemModule"][videoId]["stats"]["playCount"];
+    let description = json["ItemModule"][videoId]["desc"];
+
+    // User infos
+    const authorUniqueId = json["ItemModule"][videoId]["author"];
+    const nickname = json["ItemModule"][videoId]["nickname"];
+    const avatar = encodeURI(json["UserModule"]["users"][authorUniqueId]["avatarThumb"]);
+
+
+    // Spoiler check
+    const spoiler = message.content.match(new RegExp(/([|]{2})/gi));
+    if (spoiler) description = "||" + description + "||";
+
+    // Remove all hashtags from description
+    const hashtagsRegex = new RegExp(/(#\w+)/gi);
+    const hashtagsToDelete = description.match(hashtagsRegex);
+
+    if (hashtagsToDelete !== null) {
+        hashtagsToDelete.forEach((item) => {
+            description = description.replace(item, "");
+        });
     }
 
     try {
         const embed = new EmbedBuilder()
             .setColor('#EF2950')
             .setTitle(`Lien du TikTok`)
-            .setURL(data["share_info"]["share_url"])
+            .setURL(url)
             .setAuthor({
-                name: `${data["author"]["nickname"]} (@${data["author"]["unique_id"]})`,
-                iconURL: data["author"]["avatar_168x168"]["url_list"][0],
-                url: `https://www.tiktok.com/@${data["author"]["unique_id"]}`,
+                name: `${nickname} (@${authorUniqueId})`,
+                iconURL: avatar,
+                url: `https://www.tiktok.com/@${authorUniqueId}`,
             })
             .addFields(
-                { name: "Vues", value: data["statistics"]["play_count"].toString(), inline: true },
-                { name: "Likes", value: data["statistics"]["digg_count"].toString(), inline: true },
-                { name: "Commentaires", value: data["statistics"]["comment_count"].toString(), inline: true },
+                { name: "Vues", value: views.toString(), inline: true },
+                { name: "Likes", value: likes.toString(), inline: true },
+                { name: "Commentaires", value: comments.toString(), inline: true },
             )
-            .setTimestamp(new Date(data["create_time"] * 1000))
+            .setTimestamp(createdAt)
             .setFooter({
                 text: `Envoyé par ${message.member.user.username}`,
                 iconURL: message.member.user.avatarURL({ dynamic: true }),
             });
 
-        let description = data["desc"];
-        // Spoiler check
-        const spoilerRegex = new RegExp(/([|]{2})/gi);
-        const spoiler = message.content.match(spoilerRegex);
-
-        if (spoiler) {
-            description = "||" + description + "||";
-        }
-
-        // Remove all hashtags from description
-        const hashtagsRegex = new RegExp(/(#\w+)/gi);
-        const hashtagsToDelete = data["desc"].match(hashtagsRegex);
-
-        if (hashtagsToDelete !== null) {
-            hashtagsToDelete.forEach((item) => {
-                description = description.replace(item, "");
-            });
-        }
-
         if (description.length > 0) {
             embed.setDescription(description);
         }
 
-        await download_video(message, data['video']['play_addr']['url_list'][0], embed, spoiler);
+        await download_video(message, videoUrl, embed, spoiler);
     } catch (e) {
         logger.error(e);
         console.log(e);
