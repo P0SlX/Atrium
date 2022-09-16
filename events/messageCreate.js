@@ -1,9 +1,10 @@
-const twitter = require('../utils/twitter');
-const tiktok = require('../utils/tiktok');
-const admin = require('../utils/admin');
 const webm = require('../utils/webm');
-const reddit = require('../utils/reddit');
 const tempo = require('../utils/tempo');
+const admin = require('../utils/admin');
+const twitch = require('../utils/twitch');
+const tiktok = require('../utils/tiktok');
+const reddit = require('../utils/reddit');
+const twitter = require('../utils/twitter');
 const { who_asked } = require('../resources/who_asked.json');
 
 module.exports = {
@@ -24,6 +25,9 @@ module.exports = {
         }
         else if (message.content.includes("reddit.com")) {
             await reddit(message);
+        }
+        else if (message.content.includes("clips.twitch.tv")) {
+            await twitch(message);
         }
         else if (message.channel.id.toString() === "841405624985190430") {
             await tempo(message);
