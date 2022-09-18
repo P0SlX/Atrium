@@ -3,7 +3,7 @@ const { spawn } = require('node:child_process');
 const { ActionRowBuilder, ButtonBuilder } = require("discord.js");
 const { ButtonStyle } = require("discord-api-types/v8");
 const fs = require("fs");
-const tinyurl = require("../utils/tinyurl.js");
+const { shorten } = require("../utils/tinyurl");
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -11,7 +11,6 @@ module.exports = {
         .setDescription('Télécharge la vidéo')
         .addStringOption(option => option.setName('video').setDescription("Lien de la vidéo").setRequired(true)),
     async execute(interaction) {
-        // differ reply
         await interaction.reply({ content: "Récupération des données en cours...", ephemeral: true });
 
         const video = interaction.options.getString('video');
@@ -23,21 +22,23 @@ module.exports = {
 
             const slicedFormats = data["formats"].slice(-5);
 
-            const urls = slicedFormats.map(format => format.url.length > 512 ? tinyurl(format.url) : format.url);
+            // Discord does not support link longer than 512 characters, so we need to shorten it
+            const urls = slicedFormats.map(format => format.url.length > 512 ? shorten(format.url) : format.url);
             const tinyurls = await Promise.all(urls);
             // Replace urls with tinyurls
             slicedFormats.forEach((format, index) => format.url = tinyurls[index]);
 
             const buttons = new ActionRowBuilder();
-            for (const format of slicedFormats) {
+
+            slicedFormats.forEach(format => {
                 let label = format["height"] + "p";
                 if (format["fps"]) label += " " + format["fps"] + "fps";
                 buttons.addComponents(
                     new ButtonBuilder()
-                        .setStyle(ButtonStyle.Link)
-                        .setLabel(label)
-                        .setURL(format["url"]));
-            }
+                    .setStyle(ButtonStyle.Link)
+                    .setLabel(label)
+                    .setURL(format["url"]));
+            });
 
             // Better handle this
             const author = data["uploader"] ? data["uploader"] : data["creator"];
