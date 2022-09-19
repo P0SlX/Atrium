@@ -35,7 +35,7 @@ module.exports = {
         });
     },
 
-    post: (url, data) => {
+    post: async (url, data) => {
         return new Promise((resolve, reject) => {
             const req = sendRequest(url, 'POST', resolve, reject);
             const postData = JSON.stringify(data);
@@ -44,7 +44,7 @@ module.exports = {
         });
     },
 
-    patch: (url, data) => {
+    patch: async (url, data) => {
         return new Promise((resolve, reject) => {
             const req = sendRequest(url, 'PATCH', resolve, reject);
             const postData = JSON.stringify(data);
@@ -53,7 +53,7 @@ module.exports = {
         });
     },
 
-    put: (url, data) => {
+    put: async (url, data) => {
         return new Promise((resolve, reject) => {
             const req = sendRequest(url, 'PUT', resolve, reject);
             const postData = JSON.stringify(data);
@@ -62,7 +62,7 @@ module.exports = {
         });
     },
 
-    delete: (url) => {
+    delete: async (url) => {
         return new Promise((resolve, reject) => {
             const req = sendRequest(url, 'DELETE', resolve, reject);
             req.end();
