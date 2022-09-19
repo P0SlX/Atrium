@@ -8,7 +8,7 @@ module.exports = {
     async execute(interaction) {
         if (!interaction.member.permissionsIn(interaction.channel).has("ADMINISTRATOR")) {
             return interaction.reply({
-                content: "Tu n'as pas la permission d'effectuer cette commande, demande à un connard d'amin",
+                content: "Tu n'as pas la permission d'effectuer cette commande, demande à un connard d'admin",
                 ephemeral: true,
             });
         }
