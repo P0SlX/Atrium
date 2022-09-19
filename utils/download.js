@@ -21,7 +21,7 @@ module.exports = {
                     file.write(chunk);
                 });
 
-                res.on("end", function(chunk) {
+                res.on("end", function() {
                     file.end();
                     resolve();
                 });
