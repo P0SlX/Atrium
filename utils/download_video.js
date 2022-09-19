@@ -1,5 +1,5 @@
 const { v1: uuidv1 } = require("uuid");
-const download = require("download");
+const { download } = require('../utils/download');
 const fs = require("fs");
 
 
@@ -14,7 +14,7 @@ module.exports = async (message, url, embed, spoiler) => {
     }
 
     // Download video in tmp folder
-    await download(url, folderPath, { filename: filename });
+    await download(url, filename, folderPath);
 
     // Sending embed first because discord still don't support video in embed...
     await message.channel.send({ embeds: [embed] });
