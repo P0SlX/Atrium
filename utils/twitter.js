@@ -50,7 +50,6 @@ module.exports = async (message) => {
                     iconURL: "https://abs.twimg.com/responsive-web/client-web/icon-default.ee534d85.png",
                     url: data["uploader_url"],
                 })
-                .setDescription(data["description"])
                 .addFields(
                     { name: 'Likes', value: data["like_count"].toString(), inline: true },
                     { name: 'Retweets', value: data["repost_count"].toString(), inline: true },
@@ -60,12 +59,13 @@ module.exports = async (message) => {
                     text: `Envoyé par ${message.member.user.username}`,
                     iconURL: message.member.user.avatarURL({ dynamic: true }),
                 });
-            // Spoiler check
+
+                // Spoiler check
             const spoilerRegex = new RegExp(/([|]{2})/gi);
             const spoiler = message.content.match(spoilerRegex);
 
-            if (spoiler) {
-                embed.setDescription("||" + data["description"] + "||");
+            if (data["description"] !== "") {
+                spoiler ? embed.setDescription("||" + data["description"] + "||") : embed.setDescription(data["description"]);
             }
 
             await download_video(message, data['url'], embed, spoiler);
