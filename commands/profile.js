@@ -55,10 +55,12 @@ module.exports = {
                 const kp = result[0]['AVG(kill_participation)'];
                 const nbgames = result[0]['COUNT(idgame)'];
 
-
-                const ranksoloq = res["rank"].forEach((rank) => {
-                    if (rank["queueType"] === "RANKED_SOLO_5x5") return `${rank['tier']} ${rank['rank']} ${rank['leaguePoints']} LP`;
-                });
+                let ranksoloq = "N/A";
+                for (const r of res["rank"]) {
+                    if (r.queueType === "RANKED_SOLO_5x5") {
+                        ranksoloq = r["tier"] + " " + r["rank"] + " " + r["leaguePoints"] + " LP";
+                    }
+                }
 
                 const profile = new EmbedBuilder()
                     .setColor("#0099ff")
