@@ -3,7 +3,7 @@ const { spawn } = require('node:child_process');
 const { ActionRowBuilder, ButtonBuilder } = require("discord.js");
 const { ButtonStyle } = require("discord-api-types/v8");
 const fs = require("fs");
-const { shorten } = require("../utils/tinyurl");
+const { get } = require("../utils/https");
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -23,7 +23,7 @@ module.exports = {
             const slicedFormats = data["formats"].slice(-5);
 
             // Discord does not support link longer than 512 characters, so we need to shorten it
-            const urls = slicedFormats.map(format => format.url.length > 512 ? shorten(format.url) : format.url);
+            const urls = slicedFormats.map(format => format.url.length > 512 ? get(`https://tinyurl.com/api-create.php?url=${format.url}`) : format.url);
             const tinyurls = await Promise.all(urls);
             // Replace urls with tinyurls
             slicedFormats.forEach((format, index) => format.url = tinyurls[index]);
@@ -33,8 +33,7 @@ module.exports = {
             slicedFormats.forEach(format => {
                 let label = format["height"] + "p";
                 if (format["fps"]) label += " " + format["fps"] + "fps";
-                buttons.addComponents(
-                    new ButtonBuilder()
+                buttons.addComponents(new ButtonBuilder()
                     .setStyle(ButtonStyle.Link)
                     .setLabel(label)
                     .setURL(format["url"]));
