@@ -12,7 +12,12 @@ module.exports = async (message) => {
     await message.channel.sendTyping();
 
     // Fetch webpage
-    const data = await get(url);
+    const data = await get(url).catch((err) => {
+        logger.error(err);
+        console.error(err);
+        message.reply({ content: "Erreur lors de la récupération des données" });
+        return false;
+    });
 
     // Extract JSON from webpage
     const regex = new RegExp(/<script id="SIGI_STATE" type="application\/json">(.*)<\/script><script id="SIGI_RETRY" type="application\/json">/i);
