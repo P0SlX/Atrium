@@ -3,3 +3,4 @@ config.json
 .idea/
 atrium.db
 yarn-error*
+deploy-commands.js
