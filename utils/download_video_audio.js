@@ -1,5 +1,5 @@
 const { v1: uuidv1 } = require("uuid");
-const download = require("download");
+const { download } = require("./download");
 const fs = require("fs");
 const { exec } = require("child_process");
 
@@ -17,8 +17,8 @@ module.exports = async (message, video, audio, embed, spoiler) => {
     }
 
     await Promise.all([
-        download(video, folderPath, { filename: video_filename }),
-        download(audio, folderPath, { filename: audio_filename }),
+        download(video, video_filename, folderPath),
+        download(audio, audio_filename, folderPath),
     ]);
 
     const { error } = await exec(`timeout 30 ffmpeg -i ${folderPath}${video_filename} -i ${folderPath}${audio_filename} -c copy ${folderPath}${output_filename}`);
@@ -43,7 +43,7 @@ module.exports = async (message, video, audio, embed, spoiler) => {
         console.error(err);
     });
 
-    fs.unlinkSync(`${folderPath}${video_filename}`);
-    fs.unlinkSync(`${folderPath}${audio_filename}`);
-    fs.unlinkSync(`${folderPath}${output_filename}`);
+    fs.unlink(`${folderPath}${video_filename}`, () => { });
+    fs.unlink(`${folderPath}${audio_filename}`, () => { });
+    fs.unlink(`${folderPath}${output_filename}`, () => { });
 };

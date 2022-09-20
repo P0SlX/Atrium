@@ -10,7 +10,6 @@
     "cron": "^2.1.0",
     "discord-api-types": "^0.37.10",
     "discord.js": "^14.3.0",
-    "download": "^8.0.0",
     "mysql": "^2.18.1",
     "node-cron": "^3.0.0",
     "node-json-db": "^2.1.2",

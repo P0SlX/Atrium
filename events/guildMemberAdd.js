@@ -14,10 +14,11 @@ module.exports = {
                 if (err) {
                     console.error(err.message);
                     logger.error(err.message);
+                    return;
                 }
 
                 // Nouvel utilisateur
-                if (row == null) return;
+                if (!row) return;
 
                 const roles = row.roles.split(',');
                 const pseudo = row.nickname;

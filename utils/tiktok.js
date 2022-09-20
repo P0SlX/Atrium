@@ -1,7 +1,7 @@
 const { EmbedBuilder } = require("discord.js");
 const download_video = require("./download_video");
+const { get } = require("./https");
 const extract_url = require("./extract_url");
-const axios = require('axios');
 
 module.exports = async (message) => {
     const url = await extract_url(message);
@@ -12,15 +12,11 @@ module.exports = async (message) => {
     await message.channel.sendTyping();
 
     // Fetch webpage
-    const data = await axios.get(url, {
-        headers: {
-            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36",
-        },
-    });
+    const data = await get(url);
 
     // Extract JSON from webpage
     const regex = new RegExp(/<script id="SIGI_STATE" type="application\/json">(.*)<\/script><script id="SIGI_RETRY" type="application\/json">/i);
-    const match = data.data.match(regex)[1];
+    const match = data.match(regex)[1];
     const json = JSON.parse(match);
 
     // Video infos

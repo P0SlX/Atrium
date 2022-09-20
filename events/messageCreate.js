@@ -5,6 +5,7 @@ const twitch = require('../utils/twitch');
 const tiktok = require('../utils/tiktok');
 const reddit = require('../utils/reddit');
 const twitter = require('../utils/twitter');
+const { get } = require('../utils/https');
 const { who_asked } = require('../resources/who_asked.json');
 
 module.exports = {

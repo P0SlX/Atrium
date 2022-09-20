@@ -1,4 +1,4 @@
-const download = require("download");
+const { download } = require("./download");
 const fs = require("fs");
 const { exec } = require('child_process');
 const { MessageEmbed } = require("discord.js");
@@ -12,7 +12,7 @@ module.exports = async (message) => {
     for (const url of attachmentsURL) {
         const filename = url.split('/')[5];
 
-        await download(url, folderPath, { filename: filename + ".webm" })
+        await download(url, filename + ".webm", folderPath)
             .then(async () => {
 
                 // Conversion du fichier en MP4
@@ -31,7 +31,7 @@ module.exports = async (message) => {
                             });
 
                         if (message.content !== "") {
-                            embed.setTitle(message.content);
+                            await embed.setTitle(message.content);
                         }
 
                         await message.channel.send({ embeds: [embed] });

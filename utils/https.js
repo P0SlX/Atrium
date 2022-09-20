@@ -1,4 +1,5 @@
 const https = require('https');
+const { URL } = require('node:url');
 
 function sendRequest(url, method, resolve, reject) {
     const domain = url.match(/:\/\/(.[^/]+)/)[1];
@@ -13,20 +14,34 @@ function sendRequest(url, method, resolve, reject) {
         },
     };
     return https.request(options, function(res) {
-        const chunks = [];
+        // Redirect ?
+        if (res.statusCode > 300 && res.statusCode < 400 && res.headers.location) {
+            const urlObj = new URL(res.headers.location);
+            if (urlObj.hostname) {
+                const req = sendRequest(res.headers.location, method, resolve, reject);
+                req.end();
+            }
+            else {
+                const newUrl = urlObj.protocol + '//' + domain + res.headers.location;
+                const req = sendRequest(newUrl, method, resolve, reject);
+                req.end();
+            }
+        }
+        else {
+            const chunks = [];
+            res.on("data", function(chunk) {
+                chunks.push(chunk);
+            });
 
-        res.on("data", function(chunk) {
-            chunks.push(chunk);
-        });
+            res.on("end", function() {
+                const body = Buffer.concat(chunks);
+                resolve(body.toString());
+            });
 
-        res.on("end", function() {
-            const body = Buffer.concat(chunks);
-            resolve(body.toString());
-        });
-
-        res.on("error", function(error) {
-            reject(error);
-        });
+            res.on("error", function(error) {
+                reject(error);
+            });
+        }
     });
 }
 

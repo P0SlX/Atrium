@@ -8,11 +8,11 @@ const riot_api = require('../utils/riot_api');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('profile')
-        .setDescription('Affiche un profile lol')
+        .setDescription('Affiche un profile LoL')
         .addStringOption(option => option.setName('pseudo').setDescription('Profile à regarder').setRequired(true)),
     async execute(interaction) {
         const res = await riot_api(interaction, true);
-        if (res === undefined) return;
+        if (!res) return;
 
         const logger = global.LOGGER;
 
@@ -56,12 +56,9 @@ module.exports = {
                 const nbgames = result[0]['COUNT(idgame)'];
 
 
-                let ranksoloq = "N/A";
-                for (const r of res["rank"]) {
-                    if (r.queueType === "RANKED_SOLO_5x5") {
-                        ranksoloq = r["tier"] + " " + r["rank"] + " " + r["leaguePoints"] + " LP";
-                    }
-                }
+                const ranksoloq = res["rank"].forEach((rank) => {
+                    if (rank["queueType"] === "RANKED_SOLO_5x5") return `${rank['tier']} ${rank['rank']} ${rank['leaguePoints']} LP`;
+                });
 
                 const profile = new EmbedBuilder()
                     .setColor("#0099ff")

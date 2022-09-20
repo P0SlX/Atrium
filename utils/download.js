@@ -2,7 +2,7 @@ const https = require('https');
 const fs = require('fs');
 
 module.exports = {
-    download: (url, filename, filepath) => {
+    download: async (url, filename, filepath) => {
         return new Promise((resolve, reject) => {
             const domain = url.match(/:\/\/(.[^/]+)/)[1];
             const path = url.match(/:\/\/.[^/]+(.*)/)[1];

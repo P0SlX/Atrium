@@ -7,7 +7,7 @@ const { host, user, password, database } = require('../config.json');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('ladder')
-        .setDescription('Afficher le classement du serveur sur lol')
+        .setDescription('Afficher le classement du serveur sur LoL')
         .addStringOption(option => option.setName('queuetype').setDescription('Type de queue').setRequired(true)
             .addChoices(
                 { name: 'Ranked Solo/Duo', value: 'soloq' },

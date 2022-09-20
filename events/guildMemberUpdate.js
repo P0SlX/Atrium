@@ -5,7 +5,11 @@ module.exports = {
         // On stock uniquement les pseudo et les roles
         // Mais l'event est trigger pour d'autre raison
         // Donc si c'est pas ce qu'on veut, on fait pas
-        if ((oldMember.nickname === newMember.nickname) && (oldMember.roles.cache.size === newMember.roles.cache.size)) return;
+        if ((oldMember.nickname === newMember.nickname)
+            &&
+            (oldMember.roles.cache.size === newMember.roles.cache.size)) {
+            return;
+        }
 
         const db = global.DB;
         const logger = global.LOGGER;
@@ -19,12 +23,13 @@ module.exports = {
                 if (err) {
                     logger.error(err.message);
                     console.error(err.message);
+                    return;
                 }
 
                 let sql;
 
                 // User inexistant ?
-                if (row == null) {
+                if (!row) {
                     sql = `INSERT INTO roles(roles, nickname, id)
                            VALUES (?, ?, ?)`;
                 }
