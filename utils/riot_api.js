@@ -1,18 +1,16 @@
 const { apiKey } = require("../config.json");
-const axios = require('axios');
+const { get } = require("./https");
 
 module.exports = async (interaction, needVersion) => {
     const logger = global.LOGGER;
     const param = encodeURIComponent(interaction.options.getString('pseudo').trim());
     let res = {};
 
-    await axios.get(`https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/${param}?api_key=${apiKey}`)
+    await get(`https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/${param}?api_key=${apiKey}`)
         .then(async (response) => {
-            res.sum = response.data;
-            await axios.get(`https://euw1.api.riotgames.com/lol/league/v4/entries/by-summoner/${response.data.id}?api_key=${apiKey}`)
-                .then((response) => {
-                    res.rank = response.data
-                });
+            res.sum = JSON.parse(response.toString());
+            await get(`https://euw1.api.riotgames.com/lol/league/v4/entries/by-summoner/${res.sum.id}?api_key=${apiKey}`)
+                .then((response) => res.rank = JSON.parse(response.toString()));
         })
         .catch((err) => {
             logger.error(err);
@@ -22,10 +20,8 @@ module.exports = async (interaction, needVersion) => {
         });
 
     if (needVersion) {
-        await axios.get(`https://ddragon.leagueoflegends.com/api/versions.json`)
-            .then((response) => {
-                res.version = response.data[0];
-            });
+        await get(`https://ddragon.leagueoflegends.com/api/versions.json`)
+            .then((response) => res.version = JSON.parse(response.toString())[0]);
     }
     return res;
 };
