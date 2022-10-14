@@ -47,7 +47,7 @@ module.exports = async (message) => {
     if (spoiler) description = "||" + description + "||";
 
     // Remove all hashtags from description
-    const hashtagsRegex = new RegExp(/(#\w+)/gi);
+    const hashtagsRegex = new RegExp(/(#\S*)/gi);
     const hashtagsToDelete = description.match(hashtagsRegex);
 
     if (hashtagsToDelete !== null) {
