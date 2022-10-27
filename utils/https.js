@@ -16,9 +16,16 @@ function sendRequest(url, method, resolve, reject) {
     return https.request(options, function(res) {
         // Redirect ?
         if (res.statusCode > 300 && res.statusCode < 400 && res.headers.location) {
-            const urlObj = new URL(res.headers.location);
+
+            // Sometimes tiktok omit https:// and domain...
+            let url = res.headers.location;
+            if (!res.headers.location.startsWith('http')) {
+                url = "https://" + domain + res.headers.location;
+            }
+
+            const urlObj = new URL(url);
             if (urlObj.hostname) {
-                const req = sendRequest(res.headers.location, method, resolve, reject);
+                const req = sendRequest(url, method, resolve, reject);
                 req.end();
             }
             else {
