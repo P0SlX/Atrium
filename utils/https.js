@@ -24,15 +24,11 @@ function sendRequest(url, method, resolve, reject) {
             }
 
             const urlObj = new URL(url);
-            if (urlObj.hostname) {
-                const req = sendRequest(url, method, resolve, reject);
-                req.end();
+            if (!urlObj.hostname) {
+                url = urlObj.protocol + '//' + domain + res.headers.location;
             }
-            else {
-                const newUrl = urlObj.protocol + '//' + domain + res.headers.location;
-                const req = sendRequest(newUrl, method, resolve, reject);
-                req.end();
-            }
+
+            sendRequest(url, method, resolve, reject).end();
         }
         else {
             const chunks = [];
