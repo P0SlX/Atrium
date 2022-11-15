@@ -5,8 +5,15 @@ const twitch = require('../utils/twitch');
 const tiktok = require('../utils/tiktok');
 const reddit = require('../utils/reddit');
 const twitter = require('../utils/twitter');
-const { get } = require('../utils/https');
 const { who_asked } = require('../resources/who_asked.json');
+
+const funcptr = {
+    'twitter.com': twitter,
+    'tiktok.com': tiktok,
+    'vm.tiktok.com': tiktok,
+    'reddit.com': reddit,
+    'clip.twitch.tv': twitch,
+}
 
 module.exports = {
     name: 'messageCreate',
@@ -16,21 +23,14 @@ module.exports = {
         if (message.author.bot && message.channel.id !== "841405624985190430") return;
 
         const random = Math.floor(Math.random() * 500) + 1;
-        // TODO: Sanitize message content
+        const domain = message.content.match(/:\/\/(.[^/]+)/);
 
-        if (message.content.includes("twitter.com")) {
-            await twitter(message);
+        if (domain && funcptr[domain[1]]) {
+            funcptr[domain[1]](message);
+            return;
         }
-        else if (message.content.includes("tiktok.com")) {
-            await tiktok(message);
-        }
-        else if (message.content.includes("reddit.com")) {
-            await reddit(message);
-        }
-        else if (message.content.includes("clips.twitch.tv")) {
-            await twitch(message);
-        }
-        else if (message.channel.id.toString() === "841405624985190430") {
+
+        if (message.channel.id.toString() === "841405624985190430") {
             await tempo(message);
         }
         else if (message.attachments.find(attach => attach.name.includes(".webm"))) {
@@ -39,6 +39,7 @@ module.exports = {
         else if (message.content === "admin") {
             await admin(message);
         }
+        // Who asked ?
         else if (random === 1 && !(message.author.id === "200227803189215232" && message.channel.id === "853019023544549376")) {
             message.reply({ content: who_asked[Math.floor(Math.random() * who_asked.length)] });
         }
