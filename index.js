@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { Client, Collection, Intents } = require('discord.js');
+const { Client, Collection } = require('discord.js');
 const { token, host, user, password, database } = require('./config.json');
 const sqlite3 = require('sqlite3').verbose();
 const mysql = require('mysql');

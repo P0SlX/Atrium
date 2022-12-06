@@ -2,88 +2,83 @@ const { EmbedBuilder } = require("discord.js");
 const download_video = require("./download_video");
 const { get } = require("./https");
 const extract_url = require("./extract_url");
+const { spawn } = require("node:child_process");
 
 module.exports = async (message) => {
     const url = await extract_url(message);
     if (!url) return;
 
-    const logger = global.LOGGER;
+    const logger = global.LOGGER.child({ "url": url });
+    logger.info("Twitch");
 
-    await message.channel.sendTyping();
+    const ytdlp = spawn('timeout', ['30', 'yt-dlp', '-j', url]);
 
-    // Fetch webpage
-    const data = await get(url).catch((err) => {
-        logger.error(err);
-        console.error(err);
-        message.reply({ content: "Erreur lors de la récupération des données" });
-        return false;
-    });
+    ytdlp.stdout.on('data', async (data) => {
+        data = JSON.parse(data);
+        await message.channel.sendTyping();
 
-    // Extract JSON from webpage
-    const regex = new RegExp(/<script id="SIGI_STATE" type="application\/json">(.*)<\/script><script id="SIGI_RETRY" type="application\/json">/i);
-    const match = data.match(regex)[1];
-    const json = JSON.parse(match);
+        const nickname = data["creator"];
+        const at = data["uploader"];
+        const urlAuthor = `https://www.tiktok.com/@${data["id"]}`;
 
-    // Video infos
-    const videoId = json["ItemList"]["video"]["list"][0];
-    const videoUrl = encodeURI(json["ItemModule"][videoId]["video"]["downloadAddr"]);
-    const filesize = json["ItemModule"][videoId]["video"]["bitrateInfo"][0]["DataSize"]; // in bytes
-    const createdAt = new Date(json["ItemModule"][videoId]["createTime"] * 1000);
+        let title = data["description"];
+        const views = data["view_count"];
+        const likes = data["like_count"];
+        const comments = data["comment_count"];
+        const createdAt = new Date(data["upload_date"] * 1000);
 
-    // Post infos
-    const likes = json["ItemModule"][videoId]["stats"]["diggCount"];
-    const comments = json["ItemModule"][videoId]["stats"]["commentCount"];
-    const views = json["ItemModule"][videoId]["stats"]["playCount"];
-    let description = json["ItemModule"][videoId]["desc"];
+        // get video url from data["format"], filter all video that are not vcodec='h264'
+        // and take the heaviest one under 8MB
+        const videoUrlsArr = data["formats"].filter((item) => item["vcodec"] === "h264" && item["filesize"] < 8000000 && !item["format_note"].includes('watermark'));
+        const videoUrl = videoUrlsArr[videoUrlsArr.length - 1]["url"];
 
-    // User infos
-    const authorUniqueId = json["ItemModule"][videoId]["author"];
-    const nickname = json["ItemModule"][videoId]["nickname"];
-    const avatar = encodeURI(json["UserModule"]["users"][authorUniqueId]["avatarThumb"]);
+        // Remove all hashtags from description
+        const hashtagsRegex = new RegExp(/(#\S*)/gi);
+        const hashtagsToDelete = title.match(hashtagsRegex);
 
-
-    // Spoiler check
-    const spoiler = message.content.match(new RegExp(/([|]{2})/gi));
-    if (spoiler) description = "||" + description + "||";
-
-    // Remove all hashtags from description
-    const hashtagsRegex = new RegExp(/(#\S*)/gi);
-    const hashtagsToDelete = description.match(hashtagsRegex);
-
-    if (hashtagsToDelete !== null) {
-        hashtagsToDelete.forEach((item) => {
-            description = description.replace(item, "");
-        });
-    }
-
-    try {
-        const embed = new EmbedBuilder()
-            .setColor('#EF2950')
-            .setTitle(`Lien du TikTok`)
-            .setURL(url)
-            .setAuthor({
-                name: `${nickname} (@${authorUniqueId})`,
-                iconURL: avatar,
-                url: `https://www.tiktok.com/@${authorUniqueId}`,
-            })
-            .addFields(
-                { name: "Vues", value: views.toString(), inline: true },
-                { name: "Likes", value: likes.toString(), inline: true },
-                { name: "Commentaires", value: comments.toString(), inline: true },
-            )
-            .setTimestamp(createdAt)
-            .setFooter({
-                text: `Envoyé par ${message.member.user.username}`,
-                iconURL: message.member.user.avatarURL({ dynamic: true }),
+        if (hashtagsToDelete !== null) {
+            hashtagsToDelete.forEach((item) => {
+                title = title.replace(item, "");
             });
-
-        if (description.length > 0) {
-            embed.setDescription(description);
         }
 
-        await download_video(message, videoUrl, embed, spoiler);
-    } catch (e) {
-        logger.error(e);
-        console.log(e);
-    }
+        // Spoiler check
+        const spoilerRegex = new RegExp(/([|]{2})/gi);
+        const spoiler = message.content.match(spoilerRegex);
+
+        try {
+            const embed = new EmbedBuilder()
+                .setColor('#EF2950')
+                .setTitle(`Lien du TikTok`)
+                .setURL(url)
+                .setAuthor({
+                    name: `${nickname} (@${at})`,
+                    iconURL: "https://assets.stickpng.com/images/602179070ad3230004b93c28.png",
+                    url: urlAuthor,
+                })
+                .addFields(
+                    { name: "Vues", value: views.toString(), inline: true },
+                    { name: "Likes", value: likes.toString(), inline: true },
+                    { name: "Commentaires", value: comments.toString(), inline: true },
+                )
+                .setTimestamp(createdAt)
+                .setFooter({
+                    text: `Envoyé par ${message.member.user.username}`,
+                    iconURL: message.member.user.avatarURL({ dynamic: true }),
+                });
+
+            if (title.length > 0) {
+                embed.setDescription(title);
+            }
+
+            if (spoiler) {
+                embed.setDescription("||" + title + "||");
+            }
+
+            await download_video(message, videoUrl, embed, spoiler);
+        } catch (e) {
+            logger.error(e);
+            console.log(e);
+        }
+    });
 };

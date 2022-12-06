@@ -1,5 +1,5 @@
 const { v1: uuidv1 } = require("uuid");
-const { download } = require('../utils/download');
+const axios = require('axios');
 const fs = require("fs");
 
 
@@ -14,7 +14,9 @@ module.exports = async (message, url, embed, spoiler) => {
     }
 
     // Download video in tmp folder
-    await download(url, filename, folderPath);
+    await axios.get(url, { responseType: 'stream' }).then((res) => {
+        res.data.pipe(fs.createWriteStream(`${folderPath}${filename}`));
+    });
 
     // Sending embed first because discord still don't support video in embed...
     await message.channel.send({ embeds: [embed] });
