@@ -29,7 +29,10 @@ module.exports = async (message) => {
 
         // get video url from data["format"], filter all video that are not vcodec='h264'
         // and take the heaviest one under 8MB
-        const videoUrlsArr = data["formats"].filter((item) => item["vcodec"] === "h264" && item["filesize"] < 8000000 && !item["format_note"].includes('watermark'));
+        let videoUrlsArr = data["formats"].filter((item) => item["vcodec"] === "h264" && item["filesize"] < 8000000 && !item["format_note"].includes('watermark'));
+        if (videoUrlsArr.length === 0) {
+            videoUrlsArr = data["formats"].filter((item) => item["vcodec"] === "h264" && !item["format_note"].includes('watermark'));
+        }
         const videoUrl = videoUrlsArr[videoUrlsArr.length - 1]["url"];
 
         // Remove all hashtags from description
