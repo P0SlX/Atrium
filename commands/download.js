@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { spawn } = require('node:child_process');
 const { ActionRowBuilder, ButtonBuilder } = require("discord.js");
-const { ButtonStyle } = require("discord-api-types/v8");
+const { ButtonStyle } = require("discord-api-types/v10");
 const fs = require("fs");
 const { get } = require("../utils/https");
 
