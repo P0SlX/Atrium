@@ -35,7 +35,12 @@ module.exports = {
                     { name: "Date de sortie", value: result.release, inline: true },
                     { name: "Note", value: result.vote.toString(), inline: true },
                     { name: "Genres", value: result.genres.toString(), inline: true },
-                ]);
+                ])
+                .setTimestamp(new Date())
+                .setFooter({
+                    text: `Envoyé par ${interaction.user.username}`,
+                    iconURL: interaction.user.avatarURL({ dynamic: true }),
+                });
 
             if (result.overview.length > 0) {
                 embed.setDescription(result.overview);
