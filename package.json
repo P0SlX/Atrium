@@ -5,20 +5,20 @@
   "license": "MIT",
   "dependencies": {
     "@discordjs/builders": "^1.4.0",
-    "@discordjs/rest": "^1.4.0",
+    "@discordjs/rest": "^1.5.0",
     "axios": "^1.2.1",
     "cron": "^2.1.0",
-    "discord-api-types": "^0.37.21",
+    "discord-api-types": "^0.37.23",
     "discord.js": "^14.7.1",
     "mysql": "^2.18.1",
     "node-cron": "^3.0.0",
     "node-json-db": "^2.1.2",
     "nodemon": "^2.0.20",
-    "pino": "^8.7.0",
-    "sqlite3": "^5.1.1",
+    "pino": "^8.8.0",
+    "sqlite3": "^5.1.4",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
-    "eslint": "^8.29.0"
+    "eslint": "^8.30.0"
   }
 }
