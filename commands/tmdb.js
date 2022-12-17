@@ -21,7 +21,7 @@ module.exports = {
 
         const res = await search(type, name);
 
-        if (res.length === 0) {
+        if (!res) {
             return interaction.reply({ content: "Aucun résultat", ephemeral: true });
         }
 
@@ -59,7 +59,8 @@ module.exports = {
                 new ButtonBuilder()
                     .setCustomId('previous')
                     .setLabel('Précédent')
-                    .setStyle(ButtonStyle.Primary),
+                    .setStyle(ButtonStyle.Primary)
+                    .setDisabled(true),
                 new ButtonBuilder()
                     .setCustomId('next')
                     .setLabel('Suivant')
@@ -94,14 +95,34 @@ module.exports = {
             case 'previous':
                 if (currentPage > 0) {
                     currentPage--;
-                    await i.update({ embeds: [embeds[currentPage]], ephemeral: true });
+                    if (currentPage === 0) {
+                        buttons.components[0].setDisabled(true);
+                    }
+                    else {
+                        buttons.components[0].setDisabled(false);
+                        buttons.components[1].setDisabled(false);
+                    }
                 }
+                await i.update({
+                    embeds: [embeds[currentPage]],
+                    components: [buttons],
+                });
                 break;
             case 'next':
                 if (currentPage < embeds.length - 1) {
                     currentPage++;
-                    await i.update({ embeds: [embeds[currentPage]], ephemeral: true });
+                    if (currentPage === embeds.length - 1) {
+                        buttons.components[1].setDisabled(true);
+                    }
+                    else {
+                        buttons.components[1].setDisabled(false);
+                        buttons.components[0].setDisabled(false);
+                    }
                 }
+                await i.update({
+                    embeds: [embeds[currentPage]],
+                    components: [buttons],
+                });
                 break;
             case 'select':
                 selectedResult = embeds[currentPage];
@@ -119,8 +140,9 @@ module.exports = {
             const trailers = await getTrailers(res[currentPage].id, type);
             const payload = {
                 embeds: [selectedResult],
-            }
-            if (trailers.length > 0) {
+            };
+
+            if (trailers) {
                 const trailerButton = new ActionRowBuilder();
                 for (const trailer of trailers) {
                     trailerButton.addComponents(
