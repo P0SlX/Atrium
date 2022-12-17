@@ -49,7 +49,7 @@ class Movie extends BaseObject {
     constructor(data) {
         super(data);
         this.title = data.title.length > 256 ? data.title.slice(0, 253) + "..." : data.title;
-        this.release = data.release_date ? new Date(data.release_date).toLocaleDateString() : "Inconnue";
+        this.release = data.release_date ? new Date(data.release_date).toLocaleDateString('fr-FR') : "Inconnue";
     }
 }
 
@@ -57,7 +57,7 @@ class TvShow extends BaseObject {
     constructor(data) {
         super(data);
         this.title = data.name.length > 256 ? data.name.slice(0, 253) + "..." : data.name;
-        this.release = data.first_air_date ? new Date(data.first_air_date).toLocaleDateString() : "Inconnue";
+        this.release = data.first_air_date ? new Date(data.first_air_date).toLocaleDateString('fr-FR') : "Inconnue";
     }
 }
 
@@ -77,12 +77,12 @@ async function search(type, searchContent) {
     }
 
     if (type === "movie") {
-        return res.results.slice(0, 5).map((movie) => {
+        return res.results.slice(0, 10).map((movie) => {
             return new Movie(movie);
         });
     }
 
-    return res.results.slice(0, 5).map((movie) => {
+    return res.results.slice(0, 10).map((movie) => {
         return new TvShow(movie);
     });
 }
