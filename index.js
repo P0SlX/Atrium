@@ -48,24 +48,24 @@ const db = new sqlite3.Database('atrium.db', sqlite3.OPEN_READWRITE, (err) => {
     console.log('Connecté à la base de données.');
 });
 
-const con = mysql.createConnection({
-    host: host,
-    user: user,
-    password: password,
-    database: database,
-});
+// const con = mysql.createConnection({
+//     host: host,
+//     user: user,
+//     password: password,
+//     database: database,
+// });
+//
+// con.connect(function(err) {
+//     if (err) {
+//         logger.error(err);
+//         console.error(err);
+//         return;
+//     }
+//     console.log("Connecté à la base de données MySQL.")
+// });
 
-con.connect(function(err) {
-    if (err) {
-        logger.error(err);
-        console.error(err);
-        return;
-    }
-    console.log("Connecté à la base de données MySQL.")
-});
-
-global.DB = db;
-global.con = con;
+// global.DB = db;
+// global.con = con;
 global.CLIENT = client;
 global.LOGGER = logger;
 
