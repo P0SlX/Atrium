@@ -14,7 +14,7 @@ module.exports = {
             const channel = await client.channels.cache.get('667053408636633088');
             const days = daysUntilChristmas();
             await channel.setTopic(`Il reste ${days} jours avant Noël !`);
-            await channel.send({ content: `<@&667000409247711269> Il reste ${days} jours avant Noël !` });
+            // await channel.send({ content: `<@&667000409247711269> Il reste ${days} jours avant Noël !` });
         });
         client.user.setActivity("des canettes", {
             type: ActivityType.Streaming,
