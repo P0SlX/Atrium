@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { Client, Collection } = require('discord.js');
+const { Client, Collection, Events, Partials } = require('discord.js');
 const { token, host, user, password, database } = require('./config.json');
 const sqlite3 = require('sqlite3').verbose();
 const mysql = require('mysql');
@@ -14,8 +14,9 @@ const client = new Client({
         GatewayIntentBits.GuildMessages,
         GatewayIntentBits.MessageContent,
         GatewayIntentBits.GuildMembers,
+        GatewayIntentBits.GuildMessageReactions,
     ],
-    partials: ['MESSAGE', 'CHANNEL', 'REACTION', 'USER', 'GUILD_MEMBER'],
+    partials: [Partials.Message, Partials.Channel, Partials.Reaction, Partials.User, Partials.GuildMember],
 });
 
 // Commands handler
