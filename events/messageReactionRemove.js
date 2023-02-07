@@ -1,15 +1,15 @@
 const rolesAssociation = {
     // Reaction ID: Role ID
-    '1072460803300659250': '1072454179446083584',
-    '1072460837647818813': '1072250641646358598',
-    '1072460864512344094': '1072250096487501994',
+    '1072444962169442324': '1072250096487501994', // Lol
+    '1072444732355121152': '1072250641646358598', // RL
+    '1072444526834229258': '1072427169831198750', // Valorant
 }
 
 module.exports = {
     name: 'messageReactionRemove',
     once: false,
     async execute(reaction, user) {
-        const messageId = '1072453448261439518';
+        const messageId = '1072463562276098059';
 
         if (reaction.message.id !== messageId) return;
 
@@ -19,8 +19,6 @@ module.exports = {
 
         try {
             member.roles.remove(role);
-        } catch (error) {
-            console.error(`Impossible de retirer le rôle ${role.name} à ${member.displayName} : ${error}`)
-        }
+        } catch (_) { }
     },
 };
