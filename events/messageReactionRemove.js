@@ -9,13 +9,18 @@ module.exports = {
     name: 'messageReactionRemove',
     once: false,
     async execute(reaction, user) {
-        const messageId = '1072463562276098059';
+        const messageId = '1072453448261439518';
 
-        if (reaction.message.id === messageId) {
-            const guild = reaction.message.guild;
-            const member = guild.members.cache.get(user.id);
-            const role = guild.roles.cache.get(rolesAssociation[reaction.emoji.id]);
+        if (reaction.message.id !== messageId) return;
+
+        const guild = reaction.message.guild;
+        const member = guild.members.cache.get(user.id);
+        const role = guild.roles.cache.get(rolesAssociation[reaction.emoji.id]);
+
+        try {
             member.roles.remove(role);
+        } catch (error) {
+            console.error(`Impossible de retirer le rôle ${role.name} à ${member.displayName} : ${error}`)
         }
     },
 };
