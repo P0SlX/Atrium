@@ -5,6 +5,7 @@ const twitch = require('../utils/twitch');
 const tiktok = require('../utils/tiktok');
 const reddit = require('../utils/reddit');
 const twitter = require('../utils/twitter');
+const pasdegif = require('../utils/pasdegif');
 const { who_asked } = require('../resources/who_asked.json');
 
 const funcptr = {
@@ -38,6 +39,9 @@ module.exports = {
         }
         else if (message.content === "admin") {
             await admin(message);
+        }
+        else if(message.member?.roles?.cache.some(r => r.name === 'pasdegif')) {
+            await pasdegif(message);
         }
         // Who asked ?
         else if (random === 1 && !(message.author.id === "200227803189215232" && message.channel.id === "853019023544549376")) {
