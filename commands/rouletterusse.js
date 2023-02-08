@@ -9,7 +9,7 @@ module.exports = {
 
         if (random === 1) {
             await interaction.reply('Padpo');
-            await interaction.guild.members.ban(interaction.user.id, { reason: 'Roulette russe' });
+            await interaction.guild.members.kick(interaction.user.id, { reason: 'Roulette russe' });
         }
         else {
             await interaction.reply('La chonce');
