@@ -14,5 +14,10 @@ module.exports = {
     daily: async () => {
         return await fetch(urlBase.concat('daily/'))
             .then((response) => response.json());
+    },
+
+    category: async (categoryString, count) => {
+        return await fetch(urlBase.concat('categorie/').concat(`${categoryString}/`).concat(count.toString()))
+            .then((response) => response.json());
     }
 };
