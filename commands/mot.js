@@ -19,10 +19,11 @@ module.exports = {
             .setName("daily")
             .setDescription("Mot du jour")),
     async execute(interaction) {
-        await interaction.deferReply({ ephemeral: true });
+        await interaction.deferReply();
         let count = 1;
-        if (interaction.options.getInteger('count'))
+        if (interaction.options.getInteger('count')) {
             count = interaction.options.getInteger('count');
+        }
 
         const user = interaction.user;
         let description = '';
@@ -45,7 +46,7 @@ module.exports = {
         }
 
         if (response.length === 0) {
-            await interaction.editReply({ content: 'Aucun mot trouvé', ephemeral: true });
+            await interaction.editReply({ content: 'Aucun mot trouvé' });
             return;
         }
 
