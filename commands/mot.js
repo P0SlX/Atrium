@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { random, startWith, daily, category } = require('../utils/trouve_mot');
+const { random, startWith, daily, category, size, sizeMax, sizeMin } = require('../utils/trouve_mot');
 const { EmbedBuilder } = require("discord.js");
 
 module.exports = {
@@ -49,7 +49,22 @@ module.exports = {
                         { name: '24 - Joies et peines', value: '24'},
                         { name : '25 - Gouvernement et justice', value: '25'},
                     )
-            )),
+            ))
+        .addSubcommand(subcommand => subcommand
+            .setName("size")
+            .setDescription("Mot d'une taille donnée")
+            .addIntegerOption(option => option.setName('size').setDescription('Taille du mot').setRequired(true))
+            .addIntegerOption(option => option.setName('count').setDescription('Nombre de mots')))
+        .addSubcommand(subcommand => subcommand
+            .setName("sizemin")
+            .setDescription("Mot d'une taille donnée ou plus")
+            .addIntegerOption(option => option.setName('size').setDescription('Taille du mot minimale').setRequired(true))
+            .addIntegerOption(option => option.setName('count').setDescription('Nombre de mots')))
+        .addSubcommand(subcommand => subcommand
+            .setName("sizemax")
+            .setDescription("Mot d'une taille donnée ou moins")
+            .addIntegerOption(option => option.setName('size').setDescription('Taille du mot maximale').setRequired(true))
+            .addIntegerOption(option => option.setName('count').setDescription('Nombre de mots'))),
     async execute(interaction) {
         await interaction.deferReply();
         let count = 1;
@@ -79,6 +94,21 @@ module.exports = {
             const categoryString = interaction.options.getString('category');
             description = `Mot de la catégorie ${categoryString}`;
             response = await category(categoryString, count);
+            break;
+        case 'size':
+            const stringSize = interaction.options.getInteger('size');
+            description = `Mot de taille ${stringSize}`;
+            response = await size(stringSize, count);
+            break;
+        case 'sizemin':
+            const stringSizeMin = interaction.options.getInteger('size');
+            description = `Mot de ${stringSizeMin} lettres ou plus`;
+            response = await sizeMin(stringSizeMin, count);
+            break;
+        case 'sizemax':
+            const stringSizeMax = interaction.options.getInteger('size');
+            description = `Mot de ${stringSizeMax} lettres ou moins`;
+            response = await sizeMax(stringSizeMax, count);
             break;
         }
 
