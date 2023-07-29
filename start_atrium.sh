@@ -1,3 +1,3 @@
 #!/bin/sh
-cd /home/p0slx/Atrium/
+cd /home/ubuntu/Atrium/
 /usr/bin/node index.js
