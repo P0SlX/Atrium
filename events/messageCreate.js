@@ -4,7 +4,7 @@ const admin = require('../utils/admin');
 const twitch = require('../utils/twitch');
 const tiktok = require('../utils/tiktok');
 const reddit = require('../utils/reddit');
-const twitter = require('../utils/twitter');
+const twitter = require('../utils/newTwitter');
 const pasdegif = require('../utils/pasdegif');
 const { who_asked } = require('../resources/who_asked.json');
 
@@ -40,7 +40,7 @@ module.exports = {
         else if (message.content === "admin") {
             await admin(message);
         }
-        else if(message.member?.roles?.cache.some(r => r.name === 'pasdegif')) {
+        else if (message.member?.roles?.cache.some(r => r.name === 'pasdegif')) {
             await pasdegif(message);
         }
         // Who asked ?

@@ -60,7 +60,7 @@ module.exports = async (message) => {
                     iconURL: message.member.user.avatarURL({ dynamic: true }),
                 });
 
-                // Spoiler check
+            // Spoiler check
             const spoilerRegex = new RegExp(/([|]{2})/gi);
             const spoiler = message.content.match(spoilerRegex);
 
